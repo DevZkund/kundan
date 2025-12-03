@@ -38,7 +38,7 @@ class _StatusBarIpadState extends State<StatusBarIpad> {
     return Container(
       height: 44 * scale,
       width: double.infinity,
-      decoration: BoxDecoration(color: Colors.black.withOpacity(0.1)),
+      decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.1)),
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 24 * scale),
         child: Row(

@@ -1,5 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:portfolio/screens/about_page.dart';
+import 'package:portfolio/screens/contact_page.dart';
+import 'package:portfolio/screens/education_page.dart';
+import 'package:portfolio/screens/experience_page.dart';
+import 'package:portfolio/screens/projects_page.dart';
+import 'package:portfolio/screens/skills_page.dart';
 import 'package:portfolio/widgets/status_bar_ipad.dart';
+
+import 'package:portfolio/widgets/resume_widgets.dart';
 
 class ResponsiveIpad extends StatefulWidget {
   final double maxWidth;
@@ -89,7 +97,7 @@ class _ResponsiveIpadState extends State<ResponsiveIpad> {
     borderRadius: BorderRadius.circular(36 * scale),
     boxShadow: [
       BoxShadow(
-        color: Colors.black.withOpacity(0.5),
+        color: Colors.black.withValues(alpha: 0.5),
         blurRadius: 50 * scale,
         spreadRadius: 10 * scale,
         offset: Offset(0, 20 * scale),
@@ -108,32 +116,26 @@ class _ResponsiveIpadState extends State<ResponsiveIpad> {
       children: [
         _buildWallpaper(),
         // ✨ Center text (your name in cursive)
-      Center(
-  child: ShaderMask(
-    shaderCallback: (bounds) => LinearGradient(
-      begin: Alignment.topLeft,
-      end: Alignment.bottomRight,
-      colors: [
-  Color(0xFFFFD700),
-  Color(0xFFFFA500),
-  Color(0xFFFF8C00),
-],
-
-    ).createShader(bounds),
-    child: Text(
-      "Mr. Kundan Kumar",
-      style: TextStyle(
-        fontFamily: "Pacifico",
-        fontSize: 48 * scale,
-        color: Colors.white, // required but ignored by shader
-        fontWeight: FontWeight.w400,
-        letterSpacing: 1.2,
-      ),
-      textAlign: TextAlign.center,
-    ),
-  ),
-)
-,
+        Center(
+          child: ShaderMask(
+            shaderCallback: (bounds) => LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Color(0xFFFFD700), Color(0xFFFFA500), Color(0xFFFF8C00)],
+            ).createShader(bounds),
+            child: Text(
+              "Mr. Kundan Kumar",
+              style: TextStyle(
+                fontFamily: "Pacifico",
+                fontSize: 48 * scale,
+                color: Colors.white, // required but ignored by shader
+                fontWeight: FontWeight.w400,
+                letterSpacing: 1.2,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
         Positioned(
           top: 0,
           left: 0,
@@ -181,7 +183,7 @@ class _ResponsiveIpadState extends State<ResponsiveIpad> {
       margin: EdgeInsets.symmetric(horizontal: 240 * scale),
       height: 80 * scale,
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.4),
+        color: Colors.black.withValues(alpha: 0.4),
         borderRadius: BorderRadius.circular(24 * scale),
       ),
       child: Row(
@@ -222,7 +224,7 @@ class _ResponsiveIpadState extends State<ResponsiveIpad> {
               width: 10 * scale,
               height: 10 * scale,
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.7),
+                color: Colors.black.withValues(alpha: 0.7),
                 borderRadius: BorderRadius.circular(5 * scale),
               ),
             ),
@@ -240,7 +242,7 @@ class _ResponsiveIpadState extends State<ResponsiveIpad> {
         width: 3 * scale,
         height: 60 * scale,
         decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.9),
+          color: Colors.black.withValues(alpha: 0.9),
           borderRadius: BorderRadius.circular(2 * scale),
         ),
       ),
@@ -255,7 +257,7 @@ class _ResponsiveIpadState extends State<ResponsiveIpad> {
         width: 3 * scale,
         height: 80 * scale,
         decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.9),
+          color: Colors.black.withValues(alpha: 0.9),
           borderRadius: BorderRadius.circular(2 * scale),
         ),
       ),
@@ -270,7 +272,7 @@ class _ResponsiveIpadState extends State<ResponsiveIpad> {
         width: 300 * scale,
         height: 8 * scale,
         decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.7),
+          color: Colors.black.withValues(alpha: 0.7),
           borderRadius: BorderRadius.circular(4 * scale),
         ),
       ),
@@ -323,13 +325,17 @@ class _ResponsiveIpadState extends State<ResponsiveIpad> {
   Widget _buildAppContent(String page, double scale) {
     switch (page) {
       case 'About':
-        return Center(
-          child: Text(
-            "About Page Content Here",
-            style: TextStyle(fontSize: 18 * scale, color: Colors.black87),
-          ),
-        );
-
+        return AboutPage(scale: scale);
+      case 'Experience':
+        return ExperiencePage(scale: scale);
+      case 'Projects':
+        return ProjectsPage(scale: scale);
+      case 'Skills':
+        return SkillsPage(scale: scale);
+      case 'Education':
+        return EducationPage(scale: scale);
+      case 'Contact':
+        return ContactPage(scale: scale);
       default:
         return SizedBox.shrink();
     }
@@ -371,8 +377,8 @@ class _DockIcon extends StatelessWidget {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  app.color.withOpacity(0.9),
-                  app.color.withOpacity(0.7),
+                  app.color.withValues(alpha: 0.9),
+                  app.color.withValues(alpha: 0.7),
                 ],
               ),
               borderRadius: BorderRadius.circular(16 * scale),
@@ -412,7 +418,7 @@ class _AppGridIcon extends StatelessWidget {
             height: 56 * scale,
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [app.color, app.color.withOpacity(0.7)],
+                colors: [app.color, app.color.withValues(alpha: 0.7)],
               ),
               borderRadius: BorderRadius.circular(14 * scale),
             ),

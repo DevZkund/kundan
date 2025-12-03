@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class ResponsiveIphone extends StatelessWidget {
   final double maxWidth;
   final double maxHeight;
-  
+
   const ResponsiveIphone({
     super.key,
     required this.maxWidth,
@@ -14,19 +14,19 @@ class ResponsiveIphone extends StatelessWidget {
   Widget build(BuildContext context) {
     // iPhone 14 aspect ratio: 390:844 ≈ 1:2.16
     final targetAspectRatio = 844 / 390;
-    
+
     // Calculate optimal size within constraints
     double width = maxWidth;
     double height = width * targetAspectRatio;
-    
+
     if (height > maxHeight) {
       height = maxHeight;
       width = height / targetAspectRatio;
     }
-    
+
     // Calculate bezel (responsive based on device size)
     final bezel = width * 0.026; // ~2.6% of width
-    
+
     return Container(
       width: width,
       height: height,
@@ -35,7 +35,7 @@ class ResponsiveIphone extends StatelessWidget {
         borderRadius: BorderRadius.circular(42 * (width / 390)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.4),
+            color: Colors.black.withValues(alpha: 0.4),
             blurRadius: 30,
             spreadRadius: 5,
             offset: const Offset(0, 10),
@@ -58,7 +58,7 @@ class ResponsiveIphone extends StatelessWidget {
               ),
             ),
           ),
-          
+
           // Dynamic Island / Notch
           Positioned(
             top: bezel - 6,
@@ -97,7 +97,7 @@ class ResponsiveIphone extends StatelessWidget {
               ),
             ),
           ),
-          
+
           // Volume up button
           Positioned(
             top: height * 0.18,
@@ -106,14 +106,14 @@ class ResponsiveIphone extends StatelessWidget {
               width: 3,
               height: 40 * (height / 844),
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.8),
+                color: Colors.black.withValues(alpha: 0.8),
                 borderRadius: const BorderRadius.horizontal(
                   left: Radius.circular(2),
                 ),
               ),
             ),
           ),
-          
+
           // Volume down button
           Positioned(
             top: height * 0.25,
@@ -122,14 +122,14 @@ class ResponsiveIphone extends StatelessWidget {
               width: 3,
               height: 40 * (height / 844),
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.8),
+                color: Colors.black.withValues(alpha: 0.8),
                 borderRadius: const BorderRadius.horizontal(
                   left: Radius.circular(2),
                 ),
               ),
             ),
           ),
-          
+
           // Power button
           Positioned(
             top: height * 0.18,
@@ -138,14 +138,14 @@ class ResponsiveIphone extends StatelessWidget {
               width: 3,
               height: 80 * (height / 844),
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.8),
+                color: Colors.black.withValues(alpha: 0.8),
                 borderRadius: const BorderRadius.horizontal(
                   right: Radius.circular(2),
                 ),
               ),
             ),
           ),
-          
+
           // Home indicator
           Positioned(
             bottom: bezel + 10,
@@ -156,7 +156,7 @@ class ResponsiveIphone extends StatelessWidget {
                 width: 80 * (width / 390),
                 height: 5 * (width / 390),
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.8),
+                  color: Colors.black.withValues(alpha: 0.8),
                   borderRadius: BorderRadius.circular(2.5 * (width / 390)),
                 ),
               ),
@@ -166,7 +166,7 @@ class ResponsiveIphone extends StatelessWidget {
       ),
     );
   }
-  
+
   Widget _buildScreenContent(double width) {
     return Container(
       color: Colors.white,
@@ -174,11 +174,7 @@ class ResponsiveIphone extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.phone_iphone,
-              size: width * 0.2,
-              color: Colors.blue,
-            ),
+            Icon(Icons.phone_iphone, size: width * 0.2, color: Colors.blue),
             SizedBox(height: width * 0.06),
             Text(
               'Hello',
@@ -191,10 +187,7 @@ class ResponsiveIphone extends StatelessWidget {
             SizedBox(height: width * 0.03),
             Text(
               'iPhone View',
-              style: TextStyle(
-                fontSize: width * 0.04,
-                color: Colors.black54,
-              ),
+              style: TextStyle(fontSize: width * 0.04, color: Colors.black54),
             ),
           ],
         ),
