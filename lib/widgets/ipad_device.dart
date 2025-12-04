@@ -7,8 +7,6 @@ import 'package:portfolio/screens/projects_page.dart';
 import 'package:portfolio/screens/skills_page.dart';
 import 'package:portfolio/widgets/status_bar_ipad.dart';
 
-import 'package:portfolio/widgets/resume_widgets.dart';
-
 class ResponsiveIpad extends StatefulWidget {
   final double maxWidth;
   final double maxHeight;
@@ -36,11 +34,11 @@ class _ResponsiveIpadState extends State<ResponsiveIpad> {
 
   // ---------------------------
   List<_AppModel> get apps => const [
-    _AppModel(Icons.person, 'About', Colors.green),
+    _AppModel(Icons.person, 'About Me', Colors.green),
     _AppModel(Icons.work, 'Experience', Colors.green),
-    _AppModel(Icons.book, 'Education', Colors.blue),
-    _AppModel(Icons.build, 'Skills', Colors.blue),
     _AppModel(Icons.folder, 'Projects', Colors.orange),
+    _AppModel(Icons.build, 'Skills', Colors.blue),
+    _AppModel(Icons.school, 'Education', Colors.blue),
     _AppModel(Icons.contact_mail, 'Contact', Colors.pink),
   ];
 
@@ -97,10 +95,10 @@ class _ResponsiveIpadState extends State<ResponsiveIpad> {
     borderRadius: BorderRadius.circular(36 * scale),
     boxShadow: [
       BoxShadow(
-        color: Colors.black.withValues(alpha: 0.5),
-        blurRadius: 50 * scale,
-        spreadRadius: 10 * scale,
-        offset: Offset(0, 20 * scale),
+        color: Colors.white.withValues(alpha: 0.3),
+        blurRadius: 5 * scale,
+        spreadRadius: 2 * scale,
+        offset: Offset(0, 2 * scale),
       ),
     ],
   );
@@ -324,7 +322,7 @@ class _ResponsiveIpadState extends State<ResponsiveIpad> {
 
   Widget _buildAppContent(String page, double scale) {
     switch (page) {
-      case 'About':
+      case 'About Me':
         return AboutPage(scale: scale);
       case 'Experience':
         return ExperiencePage(scale: scale);

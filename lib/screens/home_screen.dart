@@ -7,29 +7,26 @@ class MyHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          final screenWidth = constraints.maxWidth;
-          final screenHeight = constraints.maxHeight;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final screenWidth = constraints.maxWidth;
+        final screenHeight = constraints.maxHeight;
 
-          // Responsive logic: Use iPad for width > 600, iPhone otherwise
-          final isTablet = screenWidth > 600;
+        // Responsive logic: Use iPad for width > 600, iPhone otherwise
+        final isTablet = screenWidth > 600;
 
-          return Center(
-            child: isTablet
-                ? ResponsiveIpad(
-                    maxWidth: screenWidth * 0.95,
-                    maxHeight: screenHeight * 0.95,
-                  )
-                : ResponsiveIphone(
-                    maxWidth: screenWidth * 0.95,
-                    maxHeight: screenHeight * 0.95,
-                  ),
-          );
-        },
-      ),
+        return Center(
+          child: isTablet
+              ? ResponsiveIpad(
+                  maxWidth: screenWidth * 0.72,
+                  maxHeight: screenHeight * 0.72,
+                )
+              : ResponsiveIphone(
+                  maxWidth: screenWidth * 0.92,
+                  maxHeight: screenHeight * 0.92,
+                ),
+        );
+      },
     );
   }
 }

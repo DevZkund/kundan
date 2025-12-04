@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:portfolio/screens/home_screen.dart';
+import 'package:portfolio/screens/landing_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,11 +13,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Responsive Devices',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(),
+      theme: ThemeData(primarySwatch: Colors.blue, useMaterial3: true),
+      home: const LandingPage(scale: 1),
     );
   }
 }
