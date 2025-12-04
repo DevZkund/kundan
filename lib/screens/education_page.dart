@@ -1182,43 +1182,43 @@ class _EducationPageState extends State<EducationPage>
                     ),
                   );
                 }),
-                SizedBox(height: 40 * widget.scale),
-                Center(
-                  child: Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 32 * widget.scale,
-                      vertical: 16 * widget.scale,
-                    ),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          education.color,
-                          education.color.withValues(alpha: 0.7),
-                        ],
-                      ),
-                      borderRadius: BorderRadius.circular(30 * widget.scale),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.download,
-                          color: Colors.white,
-                          size: 20 * widget.scale,
-                        ),
-                        SizedBox(width: 12 * widget.scale),
-                        Text(
-                          'View Transcript',
-                          style: TextStyle(
-                            fontSize: 18 * widget.scale,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                SizedBox(height: 20 * widget.scale),
+                // Center(
+                //   child: Container(
+                //     padding: EdgeInsets.symmetric(
+                //       horizontal: 32 * widget.scale,
+                //       vertical: 16 * widget.scale,
+                //     ),
+                //     decoration: BoxDecoration(
+                //       gradient: LinearGradient(
+                //         colors: [
+                //           education.color,
+                //           education.color.withValues(alpha: 0.7),
+                //         ],
+                //       ),
+                //       borderRadius: BorderRadius.circular(30 * widget.scale),
+                //     ),
+                //     child: Row(
+                //       mainAxisSize: MainAxisSize.min,
+                //       children: [
+                //         Icon(
+                //           Icons.download,
+                //           color: Colors.white,
+                //           size: 20 * widget.scale,
+                //         ),
+                //         SizedBox(width: 12 * widget.scale),
+                //         Text(
+                //           'View Transcript',
+                //           style: TextStyle(
+                //             fontSize: 18 * widget.scale,
+                //             color: Colors.white,
+                //             fontWeight: FontWeight.w600,
+                //           ),
+                //         ),
+                //       ],
+                //     ),
+                //   ),
+                // ),
               ],
             ),
           ),
@@ -1412,43 +1412,43 @@ class _EducationPageState extends State<EducationPage>
                     ],
                   ),
                 ),
-                SizedBox(height: 40 * widget.scale),
-                Center(
-                  child: Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 32 * widget.scale,
-                      vertical: 16 * widget.scale,
-                    ),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          certification.color,
-                          certification.color.withValues(alpha: 0.7),
-                        ],
-                      ),
-                      borderRadius: BorderRadius.circular(30 * widget.scale),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.visibility,
-                          color: Colors.white,
-                          size: 20 * widget.scale,
-                        ),
-                        SizedBox(width: 12 * widget.scale),
-                        Text(
-                          'View Certificate',
-                          style: TextStyle(
-                            fontSize: 18 * widget.scale,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                SizedBox(height: 20 * widget.scale),
+                // Center(
+                //   child: Container(
+                //     padding: EdgeInsets.symmetric(
+                //       horizontal: 32 * widget.scale,
+                //       vertical: 16 * widget.scale,
+                //     ),
+                //     decoration: BoxDecoration(
+                //       gradient: LinearGradient(
+                //         colors: [
+                //           certification.color,
+                //           certification.color.withValues(alpha: 0.7),
+                //         ],
+                //       ),
+                //       borderRadius: BorderRadius.circular(30 * widget.scale),
+                //     ),
+                //     child: Row(
+                //       mainAxisSize: MainAxisSize.min,
+                //       children: [
+                //         Icon(
+                //           Icons.visibility,
+                //           color: Colors.white,
+                //           size: 20 * widget.scale,
+                //         ),
+                //         SizedBox(width: 12 * widget.scale),
+                //         Text(
+                //           'View Certificate',
+                //           style: TextStyle(
+                //             fontSize: 18 * widget.scale,
+                //             color: Colors.white,
+                //             fontWeight: FontWeight.w600,
+                //           ),
+                //         ),
+                //       ],
+                //     ),
+                //   ),
+                // ),
               ],
             ),
           ),

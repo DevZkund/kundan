@@ -185,9 +185,9 @@ class _LandingPageState extends State<LandingPage>
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              _primaryColor.withOpacity(0.98),
-              _secondaryColor.withOpacity(0.95),
-              const Color(0xFF0D1525).withOpacity(0.9),
+              _primaryColor.withValues(alpha: 0.98),
+              _secondaryColor.withValues(alpha: 0.95),
+              const Color(0xFF0D1525).withValues(alpha: 0.9),
             ],
             stops: const [0.0, 0.6, 1.0],
           ),
@@ -332,7 +332,7 @@ class _LandingPageState extends State<LandingPage>
   Widget _buildTypingText() {
     return Container(
       decoration: BoxDecoration(
-        color: _cardColor.withOpacity(0.5),
+        color: _cardColor.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: _borderColor, width: 1),
       ),
@@ -387,7 +387,7 @@ class _LandingPageState extends State<LandingPage>
         border: Border.all(color: _borderColor, width: 1),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withValues(alpha: 0.2),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -486,7 +486,7 @@ class _LandingPageState extends State<LandingPage>
             boxShadow: isPrimary
                 ? [
                     BoxShadow(
-                      color: _accentColor.withOpacity(0.4),
+                      color: _accentColor.withValues(alpha: 0.4),
                       blurRadius: 20,
                       spreadRadius: 2,
                       offset: const Offset(0, 8),
@@ -494,7 +494,7 @@ class _LandingPageState extends State<LandingPage>
                   ]
                 : [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
+                      color: Colors.black.withValues(alpha: 0.1),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),
@@ -561,7 +561,7 @@ class _LandingPageState extends State<LandingPage>
                 border: Border.all(color: _borderColor, width: 1),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withValues(alpha: 0.1),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -580,7 +580,7 @@ class _LandingPageState extends State<LandingPage>
       opacity: _opacityAnimation,
       child: Transform.scale(
         scale: 1.0 + _controller.value * 0.05,
-        child: Container(
+        child: SizedBox(
           width: 500 * widget.scale,
           height: 500 * widget.scale,
           child: Stack(
@@ -593,8 +593,8 @@ class _LandingPageState extends State<LandingPage>
                     shape: BoxShape.circle,
                     gradient: RadialGradient(
                       colors: [
-                        _accentColor.withOpacity(0.15),
-                        _purpleAccent.withOpacity(0.05),
+                        _accentColor.withValues(alpha: 0.15),
+                        _purpleAccent.withValues(alpha: 0.05),
                         Colors.transparent,
                       ],
                       stops: const [0.1, 0.5, 1.0],
@@ -635,18 +635,18 @@ class _LandingPageState extends State<LandingPage>
                     colors: [_cardColor, _secondaryColor],
                   ),
                   border: Border.all(
-                    color: _borderColor.withOpacity(0.5),
+                    color: _borderColor.withValues(alpha: 0.5),
                     width: 2,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
+                      color: Colors.black.withValues(alpha: 0.3),
                       blurRadius: 30,
                       spreadRadius: 5,
                       offset: const Offset(0, 20),
                     ),
                     BoxShadow(
-                      color: _accentColor.withOpacity(0.2),
+                      color: _accentColor.withValues(alpha: 0.2),
                       blurRadius: 40,
                       spreadRadius: 10,
                     ),
@@ -667,8 +667,8 @@ class _LandingPageState extends State<LandingPage>
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              Colors.white.withOpacity(0.1),
-                              Colors.white.withOpacity(0.05),
+                              Colors.white.withValues(alpha: 0.1),
+                              Colors.white.withValues(alpha: 0.05),
                               Colors.transparent,
                             ],
                           ),
@@ -702,11 +702,11 @@ class _LandingPageState extends State<LandingPage>
         height: 60 * widget.scale,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: color.withOpacity(0.1),
-          border: Border.all(color: color.withOpacity(0.3), width: 1.5),
+          color: color.withValues(alpha: 0.1),
+          border: Border.all(color: color.withValues(alpha: 0.3), width: 1.5),
           boxShadow: [
             BoxShadow(
-              color: color.withOpacity(0.2),
+              color: color.withValues(alpha: 0.2),
               blurRadius: 15,
               spreadRadius: 2,
             ),
@@ -732,8 +732,8 @@ class _LandingPageState extends State<LandingPage>
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                _textPrimary.withOpacity(0.9),
-                _textPrimary.withOpacity(0.7),
+                _textPrimary.withValues(alpha: 0.9),
+                _textPrimary.withValues(alpha: 0.7),
               ],
             ),
           ),
@@ -751,8 +751,8 @@ class _LandingPageState extends State<LandingPage>
                     border: Border.all(color: _accentColor, width: 3),
                     gradient: LinearGradient(
                       colors: [
-                        Colors.black.withOpacity(0.3),
-                        Colors.black.withOpacity(0.1),
+                        Colors.black.withValues(alpha: 0.3),
+                        Colors.black.withValues(alpha: 0.1),
                       ],
                     ),
                   ),
@@ -797,7 +797,7 @@ class _LandingPageState extends State<LandingPage>
                       bottom: Radius.circular(20),
                     ),
                     border: Border.all(color: _lightAccent, width: 2),
-                    color: _lightAccent.withOpacity(0.1),
+                    color: _lightAccent.withValues(alpha: 0.1),
                   ),
                 ),
               ),
@@ -817,7 +817,7 @@ class _LandingPageState extends State<LandingPage>
             border: Border.all(color: _borderColor, width: 2),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.2),
+                color: Colors.black.withValues(alpha: 0.2),
                 blurRadius: 20,
                 offset: const Offset(0, 10),
               ),
@@ -873,19 +873,19 @@ class _LandingPageState extends State<LandingPage>
                     Container(
                       width: 120 * widget.scale,
                       height: 4 * widget.scale,
-                      color: _accentColor.withOpacity(0.5),
+                      color: _accentColor.withValues(alpha: 0.5),
                     ),
                     SizedBox(height: 4 * widget.scale),
                     Container(
                       width: 80 * widget.scale,
                       height: 4 * widget.scale,
-                      color: _lightAccent.withOpacity(0.5),
+                      color: _lightAccent.withValues(alpha: 0.5),
                     ),
                     SizedBox(height: 4 * widget.scale),
                     Container(
                       width: 100 * widget.scale,
                       height: 4 * widget.scale,
-                      color: _purpleAccent.withOpacity(0.5),
+                      color: _purpleAccent.withValues(alpha: 0.5),
                     ),
                   ],
                 ),
@@ -988,7 +988,7 @@ class _EnhancedBackgroundPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = const Color(0xFF2D3A4F).withOpacity(0.1)
+      ..color = const Color(0xFF2D3A4F).withValues(alpha: 0.1)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 0.8;
 
@@ -1007,7 +1007,7 @@ class _EnhancedBackgroundPainter extends CustomPainter {
       ..shader =
           RadialGradient(
             colors: [
-              const Color(0xFF00C2FF).withOpacity(0.03),
+              const Color(0xFF00C2FF).withValues(alpha: 0.03),
               Colors.transparent,
             ],
             radius: 300,
@@ -1028,7 +1028,7 @@ class _EnhancedBackgroundPainter extends CustomPainter {
       ..shader =
           RadialGradient(
             colors: [
-              const Color(0xFF8A6BFF).withOpacity(0.02),
+              const Color(0xFF8A6BFF).withValues(alpha: 0.02),
               Colors.transparent,
             ],
             radius: 250,
@@ -1047,7 +1047,7 @@ class _EnhancedBackgroundPainter extends CustomPainter {
 
     // Draw minimal dots at intersections
     final dotPaint = Paint()
-      ..color = const Color(0xFF5AEDDA).withOpacity(0.08)
+      ..color = const Color(0xFF5AEDDA).withValues(alpha: 0.08)
       ..style = PaintingStyle.fill;
 
     for (double i = gridSize / 2; i < size.width; i += gridSize) {

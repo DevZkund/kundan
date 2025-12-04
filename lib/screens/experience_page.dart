@@ -224,7 +224,7 @@ class _ExperiencePageState extends State<ExperiencePage>
                       ),
                       SizedBox(height: 8 * widget.scale),
                       Text(
-                        'Infatrix Technologies Pvt. Ltd., Mohali',
+                        'Infutrix Technologies Pvt. Ltd., Mohali',
                         style: TextStyle(
                           fontSize: 18 * widget.scale,
                           color: const Color(0xFF8892B0),
@@ -273,7 +273,7 @@ class _ExperiencePageState extends State<ExperiencePage>
               ),
               SizedBox(height: 16 * widget.scale),
               _buildExperiencePoint(
-                'Implemented secure authentication, push notifications, real-time tracking, and responsive UI across diverse mobile platforms.',
+                'Implemented secure authentication, push notifications, payment integration, and responsive UI across diverse mobile platforms.',
               ),
               SizedBox(height: 16 * widget.scale),
               _buildExperiencePoint(

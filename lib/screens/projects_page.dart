@@ -28,43 +28,47 @@ class _ProjectsPageState extends State<ProjectsPage>
       title: 'Tax HelpDesk',
       category: 'Professional',
       description:
-          'Online Tax Filing Document Management App for streamlined tax filing and document verification.',
+          'A complete online tax filing and document management application built to simplify tax workflows. I developed core modules improving app performance, UI consistency, and stability across the entire system. Integrated REST APIs for tax filing processes, document uploads, and verification pipelines. Implemented secure authentication, push notifications, and real-time status tracking to ensure users stay updated throughout their filing cycle.',
       technologies: [
         'Flutter',
         'REST API',
         'Authentication',
         'Push Notifications',
+        'GetX / BLoC',
       ],
       features: [
+        'Document upload & verification',
         'Tax filing workflows',
-        'Document upload & management',
         'Real-time status tracking',
         'Secure authentication system',
       ],
       role: 'Flutter Developer',
       period: '2024',
     ),
+
     Project(
       title: 'Isomeds',
       category: 'Professional',
       description:
-          'Complete e-commerce medicine delivery app with prescription management and secure payments.',
+          'A full-featured e-commerce medicine delivery application supporting prescription uploads, secure payments, and order tracking. I built major modules including product browsing, cart handling, checkout, and prescription management. Developed a smooth and responsive UI using GetX state management and handled performance optimizations to reduce lag and loading times across devices.',
       technologies: ['Flutter', 'GetX', 'Payment Gateway', 'Firebase'],
       features: [
         'Medicine ordering system',
         'Cart management',
         'Prescription upload',
+        'Secure payments',
         'Order tracking & notifications',
       ],
       role: 'Flutter Developer',
       period: '2024',
     ),
+
     Project(
       title: 'Kaam Dhanda',
       category: 'Professional',
       description:
-          'B2B and Job Portal connecting job seekers with employers for localized job opportunities.',
-      technologies: ['Flutter', 'BLoC', 'Real-time', 'User Profiles'],
+          'A B2B and job portal platform designed to connect job seekers with employers. I built modules allowing users to create professional resumes, browse localized job listings, and apply directly within the app. On the employer side, implemented features such as job posting, candidate shortlisting, and application tracking. Integrated real-time listings, category-based filtering, and clean UI components for a fast and intuitive experience.',
+      technologies: ['Flutter', 'BLoC', 'GetX', 'Real-time', 'User Profiles'],
       features: [
         'Professional resume builder',
         'Job posting & applications',
@@ -74,12 +78,13 @@ class _ProjectsPageState extends State<ProjectsPage>
       role: 'Flutter Developer',
       period: '2024',
     ),
+
     Project(
       title: 'FMS (Factory Management System)',
       category: 'Professional',
       description:
-          'Comprehensive factory workflow and operations management system with real-time monitoring.',
-      technologies: ['Flutter', 'shaden/ui', 'BLoC (Cubit)', 'Real-time'],
+          'A comprehensive factory workflow and operations management system currently under development. Built using Flutter, shadcn/ui design components, and BLoC (Cubit) architecture. I am responsible for modules handling production tracking, order flow, machine status monitoring, and employee task management. Focused on creating scalable components and real-time updates to support factory-level operations efficiently.',
+      technologies: ['Flutter', 'shadcn/ui', 'BLoC (Cubit)', 'Real-time'],
       features: [
         'Production tracking',
         'Order management',
@@ -89,27 +94,29 @@ class _ProjectsPageState extends State<ProjectsPage>
       role: 'Flutter Developer',
       period: 'Current',
     ),
+
     Project(
       title: 'School Management System',
       category: 'Professional',
       description:
-          'Complete school administration app for managing student, teacher, and academic activities.',
-      technologies: ['Flutter', 'Firebase', 'Real-time Chat', 'Attendance'],
+          'A complete school administration application designed for managing students, teachers, and academic workflows. Built modules for attendance tracking, leave management, teacher–student chat, anecdotal notes, and academic record handling. Integrated Firebase for real-time updates and efficient data syncing across user roles.',
+      technologies: ['Flutter', 'Firebase', 'Real-time Chat'],
       features: [
         'Student attendance tracking',
         'Leave management system',
-        'Teacher-student chat',
-        'Anecdotal notes & records',
+        'Teacher–student chat',
+        'Anecdotal notes & academic records',
       ],
       role: 'Flutter Developer',
       period: '2024',
     ),
+
     Project(
       title: 'Video Player App',
       category: 'Freelance',
       description:
-          'Advanced video player supporting both online streaming and local video playback.',
-      technologies: ['Flutter', 'GetX', 'Video Streaming', 'State Management'],
+          'A modern video player application supporting both online streaming and offline local playback. Built smooth gesture-based controls, implemented GetX for reactive UI updates, and optimized buffering to ensure seamless playback on both phones and tablets. Focused on reducing lag and improving the overall user experience in real-time.',
+      technologies: ['Flutter', 'GetX', 'Video Streaming'],
       features: [
         'Online streaming support',
         'Local video playback',
@@ -119,12 +126,13 @@ class _ProjectsPageState extends State<ProjectsPage>
       role: 'Freelance Developer',
       period: '2023',
     ),
+
     Project(
       title: 'Firebase Chat App',
       category: 'Personal',
       description:
-          'Real-time chat application with Firebase backend for instant messaging and file sharing.',
-      technologies: ['Flutter', 'Firebase', 'Firestore', 'Real-time'],
+          'A full real-time chat application built using Firebase Authentication, Firestore database, and Cloud Messaging. Implemented one-on-one and group chat, instant messaging, image sharing, emoji reactions, offline persistence, and notification handling. Designed with a clean real-time architecture to ensure reliability even with low network connectivity.',
+      technologies: ['Flutter', 'Firebase', 'Firestore', 'Cloud Messaging'],
       features: [
         'One-on-one & group chat',
         'Image & emoji sharing',
@@ -134,12 +142,13 @@ class _ProjectsPageState extends State<ProjectsPage>
       role: 'Full Stack Developer',
       period: '2023',
     ),
+
     Project(
       title: 'Quiz App',
       category: 'Personal',
       description:
-          'Interactive quiz application with dynamic questions, scoring, and progress tracking.',
-      technologies: ['Flutter', 'Local Storage', 'Timer', 'Material Design'],
+          'An interactive quiz application designed with dynamic question generation, real-time scoring, timers, and local storage for saving user progress and high scores. Created with responsive UI layouts following Material Design principles to support multiple screen sizes. Built as a personal project to strengthen UI/UX consistency and state handling.',
+      technologies: ['Flutter', 'Local Storage', 'Timer'],
       features: [
         'Dynamic question system',
         'Real-time scoring',
@@ -855,40 +864,40 @@ class _ProjectsPageState extends State<ProjectsPage>
                     );
                   }).toList(),
                 ),
-                SizedBox(height: 40 * widget.scale),
-                Center(
-                  child: Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 32 * widget.scale,
-                      vertical: 16 * widget.scale,
-                    ),
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFF00D1FF), Color(0xFF7B61FF)],
-                      ),
-                      borderRadius: BorderRadius.circular(30 * widget.scale),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.code,
-                          color: Colors.white,
-                          size: 20 * widget.scale,
-                        ),
-                        SizedBox(width: 12 * widget.scale),
-                        Text(
-                          'View Source Code',
-                          style: TextStyle(
-                            fontSize: 18 * widget.scale,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                SizedBox(height: 20 * widget.scale),
+                // Center(
+                //   child: Container(
+                //     padding: EdgeInsets.symmetric(
+                //       horizontal: 32 * widget.scale,
+                //       vertical: 16 * widget.scale,
+                //     ),
+                //     decoration: BoxDecoration(
+                //       gradient: const LinearGradient(
+                //         colors: [Color(0xFF00D1FF), Color(0xFF7B61FF)],
+                //       ),
+                //       borderRadius: BorderRadius.circular(30 * widget.scale),
+                //     ),
+                //     child: Row(
+                //       mainAxisSize: MainAxisSize.min,
+                //       children: [
+                //         Icon(
+                //           Icons.code,
+                //           color: Colors.white,
+                //           size: 20 * widget.scale,
+                //         ),
+                //         SizedBox(width: 12 * widget.scale),
+                //         Text(
+                //           'View Source Code',
+                //           style: TextStyle(
+                //             fontSize: 18 * widget.scale,
+                //             color: Colors.white,
+                //             fontWeight: FontWeight.w600,
+                //           ),
+                //         ),
+                //       ],
+                //     ),
+                //   ),
+                // ),
               ],
             ),
           ),
