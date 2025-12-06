@@ -299,9 +299,7 @@ class _ResponsiveIphoneState extends State<ResponsiveIphone> {
     return Container(
       decoration: const BoxDecoration(
         image: DecorationImage(
-          image: AssetImage(
-            'assets/wallpaper/iphone-bg.jpg',
-          ), // Assuming asset exists or using color fallback
+          image: AssetImage('assets/wallpaper/ipad-bg.jpg'),
           fit: BoxFit.cover,
         ),
         color: Color(0xFF1E3A5F), // Fallback color

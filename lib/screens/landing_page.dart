@@ -202,7 +202,9 @@ class _LandingPageState extends State<LandingPage>
     final isMobile = MediaQuery.of(context).size.width < 900;
 
     return SizedBox(
-      height: isMobile ? screenHeight : screenHeight * 0.88,
+      height: isMobile
+          ? screenHeight * 1.65 * widget.scale
+          : screenHeight * 0.88 * widget.scale,
       child: AnimatedBuilder(
         animation: _controller,
         builder: (context, child) {
@@ -330,6 +332,7 @@ class _LandingPageState extends State<LandingPage>
   }
 
   Widget _buildTypingText() {
+    final isMobile = MediaQuery.of(context).size.width < 900;
     return Container(
       decoration: BoxDecoration(
         color: _cardColor.withValues(alpha: 0.5),
@@ -361,7 +364,7 @@ class _LandingPageState extends State<LandingPage>
           Text(
             _displayText,
             style: TextStyle(
-              fontSize: 18 * widget.scale,
+              fontSize: isMobile ? 16 * widget.scale : 18 * widget.scale,
               color: _accentColor,
               fontWeight: FontWeight.w700,
             ),
@@ -459,6 +462,7 @@ class _LandingPageState extends State<LandingPage>
     required bool isPrimary,
     required VoidCallback onTap,
   }) {
+    final isMobile = MediaQuery.of(context).size.width < 900;
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
@@ -466,8 +470,8 @@ class _LandingPageState extends State<LandingPage>
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 300),
           padding: EdgeInsets.symmetric(
-            horizontal: 32 * widget.scale,
-            vertical: 18 * widget.scale,
+            horizontal: isMobile ? 8 * widget.scale : 32 * widget.scale,
+            vertical: isMobile ? 16 * widget.scale : 18 * widget.scale,
           ),
           decoration: BoxDecoration(
             gradient: isPrimary
@@ -916,9 +920,10 @@ class _LandingPageState extends State<LandingPage>
   }
 
   Widget _buildFooter() {
+    final isMobile = MediaQuery.of(context).size.width < 900;
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: 40 * widget.scale,
+        horizontal: isMobile ? 20 * widget.scale : 40 * widget.scale,
         vertical: 20 * widget.scale,
       ),
 
@@ -934,9 +939,11 @@ class _LandingPageState extends State<LandingPage>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'CRAFTING DIGITAL EXPERIENCES',
+                    isMobile
+                        ? 'CRAFTING DIGITAL\nEXPERIENCES'
+                        : 'CRAFTING DIGITAL EXPERIENCES',
                     style: TextStyle(
-                      fontSize: 11 * widget.scale,
+                      fontSize: 10 * widget.scale,
                       color: _textSecondary,
                       fontWeight: FontWeight.w600,
                       letterSpacing: 2,

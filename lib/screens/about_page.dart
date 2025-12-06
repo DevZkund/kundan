@@ -62,60 +62,80 @@ class _AboutPageState extends State<AboutPage>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF0A192F), // Navy blue background
-      body: AnimatedBuilder(
-        animation: _controller,
-        builder: (context, child) {
-          return FadeTransition(
-            opacity: _fadeAnimation,
-            child: Transform.translate(
-              offset: Offset(0, _slideAnimation.value),
-              child: Transform.scale(
-                scale: _scaleAnimation.value,
-                child: SingleChildScrollView(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 48 * widget.scale,
-                    vertical: 32 * widget.scale,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      // Header with animated profile section
-                      _buildAnimatedProfileSection(),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final isSmallScreen = constraints.maxWidth < 800;
 
-                      SizedBox(height: 48 * widget.scale),
-
-                      // About Me Content in Two Columns for Tablet
-                      ConstrainedBox(
-                        constraints: BoxConstraints(
-                          maxWidth: 1200 * widget.scale,
-                        ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Left Column - About Text
-                            Expanded(flex: 3, child: _buildAboutSection()),
-
-                            SizedBox(width: 48 * widget.scale),
-
-                            // Right Column - Contact & Facts
-                            Expanded(
-                              flex: 2,
-                              child: Column(
-                                children: [
-                                  _buildSkillsSection(),
-                                  SizedBox(height: 32 * widget.scale),
-                                  _buildContactSection(),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
+          return AnimatedBuilder(
+            animation: _controller,
+            builder: (context, child) {
+              return FadeTransition(
+                opacity: _fadeAnimation,
+                child: Transform.translate(
+                  offset: Offset(0, _slideAnimation.value),
+                  child: Transform.scale(
+                    scale: _scaleAnimation.value,
+                    child: SingleChildScrollView(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: (isSmallScreen ? 24 : 48) * widget.scale,
+                        vertical: 32 * widget.scale,
                       ),
-                    ],
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          // Header with animated profile section
+                          _buildAnimatedProfileSection(),
+
+                          SizedBox(height: 48 * widget.scale),
+
+                          // About Me Content
+                          ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxWidth: 1200 * widget.scale,
+                            ),
+                            child: isSmallScreen
+                                ? Column(
+                                    children: [
+                                      _buildAboutSection(),
+                                      SizedBox(height: 32 * widget.scale),
+                                      _buildSkillsSection(),
+                                      SizedBox(height: 32 * widget.scale),
+                                      _buildContactSection(),
+                                    ],
+                                  )
+                                : Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      // Left Column - About Text
+                                      Expanded(
+                                        flex: 3,
+                                        child: _buildAboutSection(),
+                                      ),
+
+                                      SizedBox(width: 48 * widget.scale),
+
+                                      // Right Column - Contact & Facts
+                                      Expanded(
+                                        flex: 2,
+                                        child: Column(
+                                          children: [
+                                            _buildSkillsSection(),
+                                            SizedBox(height: 32 * widget.scale),
+                                            _buildContactSection(),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
+              );
+            },
           );
         },
       ),

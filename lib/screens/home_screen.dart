@@ -22,8 +22,8 @@ class MyHomePage extends StatelessWidget {
                   maxHeight: screenHeight * 0.72,
                 )
               : ResponsiveIphone(
-                  maxWidth: screenWidth * 0.92,
-                  maxHeight: screenHeight * 0.92,
+                  maxWidth: screenWidth * 0.84,
+                  maxHeight: screenHeight * 0.82,
                 ),
         );
       },
