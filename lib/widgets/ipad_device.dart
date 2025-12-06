@@ -167,7 +167,7 @@ class _ResponsiveIpadState extends State<ResponsiveIpad> {
     return Container(
       decoration: const BoxDecoration(
         image: DecorationImage(
-          image: AssetImage('wallpaper/ipad-bg.jpg'),
+          image: AssetImage('assets/wallpaper/ipad-bg.jpg'),
           fit: BoxFit.cover,
         ),
       ),
