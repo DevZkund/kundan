@@ -68,59 +68,74 @@ class _ContactPageState extends State<ContactPage>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF0A192F),
-      body: AnimatedBuilder(
-        animation: _controller,
-        builder: (context, child) {
-          return FadeTransition(
-            opacity: _fadeAnimation,
-            child: Transform.scale(
-              scale: _scaleAnimation.value,
-              child: SingleChildScrollView(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 32 * widget.scale,
-                  vertical: 40 * widget.scale,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    // Header Section
-                    _buildHeaderSection(),
-                    SizedBox(height: 60 * widget.scale),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final isSmallScreen = constraints.maxWidth < 600;
+          final responsiveScale = isSmallScreen
+              ? widget.scale * 0.8
+              : widget.scale;
 
-                    // Main Content
-                    SlideTransition(
-                      position: _slideAnimation,
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                          maxWidth: 1200 * widget.scale,
-                        ),
-                        child: Column(
-                          children: [
-                            // Contact Cards Grid
-                            _buildContactCardsGrid(),
-                            SizedBox(height: 60 * widget.scale),
-
-                            // Social Media Section
-                            _buildSocialMediaSection(),
-                            SizedBox(height: 60 * widget.scale),
-
-                            // Location & Availability
-                            _buildLocationSection(),
-                          ],
-                        ),
-                      ),
+          return AnimatedBuilder(
+            animation: _controller,
+            builder: (context, child) {
+              return FadeTransition(
+                opacity: _fadeAnimation,
+                child: Transform.scale(
+                  scale: _scaleAnimation.value,
+                  child: SingleChildScrollView(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: (isSmallScreen ? 16 : 32) * widget.scale,
+                      vertical: 40 * widget.scale,
                     ),
-                  ],
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        // Header Section
+                        _buildHeaderSection(responsiveScale),
+                        SizedBox(height: 60 * widget.scale),
+
+                        // Main Content
+                        SlideTransition(
+                          position: _slideAnimation,
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxWidth: 1200 * widget.scale,
+                            ),
+                            child: Column(
+                              children: [
+                                // Contact Cards Grid
+                                _buildContactCardsGrid(responsiveScale),
+                                SizedBox(height: 60 * widget.scale),
+
+                                // Social Media Section
+                                _buildSocialMediaSection(
+                                  responsiveScale,
+                                  isSmallScreen,
+                                ),
+                                SizedBox(height: 60 * widget.scale),
+
+                                // Location & Availability
+                                _buildLocationSection(
+                                  responsiveScale,
+                                  isSmallScreen,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
-            ),
+              );
+            },
           );
         },
       ),
     );
   }
 
-  Widget _buildHeaderSection() {
+  Widget _buildHeaderSection(double scale) {
     return Column(
       children: [
         ShaderMask(
@@ -132,12 +147,13 @@ class _ContactPageState extends State<ContactPage>
           child: Text(
             'Get In Touch',
             style: TextStyle(
-              fontSize: 56 * widget.scale,
+              fontSize: 42 * scale, // Reduced base size
               fontWeight: FontWeight.w900,
               letterSpacing: 1.5,
               height: 1.2,
               color: Colors.white,
             ),
+            textAlign: TextAlign.center,
           ),
         ),
         SizedBox(height: 20 * widget.scale),
@@ -153,11 +169,11 @@ class _ContactPageState extends State<ContactPage>
         ),
         SizedBox(height: 24 * widget.scale),
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: 40 * widget.scale),
+          padding: EdgeInsets.symmetric(horizontal: 20 * widget.scale),
           child: Text(
             'Feel free to reach out if you\'re looking for a developer, have a question, or just want to connect.',
             style: TextStyle(
-              fontSize: 18 * widget.scale,
+              fontSize: 16 * scale,
               color: const Color(0xFF8892B0),
               fontWeight: FontWeight.w300,
               height: 1.6,
@@ -169,13 +185,13 @@ class _ContactPageState extends State<ContactPage>
     );
   }
 
-  Widget _buildContactCardsGrid() {
+  Widget _buildContactCardsGrid(double scale) {
     return Column(
       children: [
         Text(
           'CONTACT INFORMATION',
           style: TextStyle(
-            fontSize: 14 * widget.scale,
+            fontSize: 12 * scale,
             fontWeight: FontWeight.w600,
             color: const Color(0xFF64FFDA),
             letterSpacing: 3,
@@ -183,11 +199,12 @@ class _ContactPageState extends State<ContactPage>
         ),
         SizedBox(height: 32 * widget.scale),
         Wrap(
-          spacing: 30 * widget.scale,
-          runSpacing: 30 * widget.scale,
+          spacing: 20 * widget.scale,
+          runSpacing: 20 * widget.scale,
           alignment: WrapAlignment.center,
           children: [
             _buildContactCard(
+              scale: scale,
               icon: Icons.phone_iphone_rounded,
               title: 'Phone',
               subtitle: '+91 8083217599',
@@ -198,6 +215,7 @@ class _ContactPageState extends State<ContactPage>
               onHover: (value) => setState(() => _isHoveringPhone = value),
             ),
             _buildContactCard(
+              scale: scale,
               icon: Icons.email_rounded,
               title: 'Email',
               subtitle: 'kundankumarcu@gmail.com',
@@ -208,6 +226,7 @@ class _ContactPageState extends State<ContactPage>
               onHover: (value) => setState(() => _isHoveringEmail = value),
             ),
             _buildContactCard(
+              scale: scale,
               icon: Icons.access_time_rounded,
               title: 'Response Time',
               subtitle: 'Within 24 hours',
@@ -225,6 +244,7 @@ class _ContactPageState extends State<ContactPage>
   }
 
   Widget _buildContactCard({
+    required double scale,
     required IconData icon,
     required String title,
     required String subtitle,
@@ -242,8 +262,8 @@ class _ContactPageState extends State<ContactPage>
         onTap: onTap,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 300),
-          width: 320 * widget.scale,
-          height: 320 * widget.scale,
+          width: 280 * scale, // Slightly smaller card base
+          height: 280 * scale,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(24 * widget.scale),
             gradient: LinearGradient(
@@ -271,53 +291,49 @@ class _ContactPageState extends State<ContactPage>
             ),
           ),
           child: Padding(
-            padding: EdgeInsets.all(32 * widget.scale),
+            padding: EdgeInsets.all(24 * scale),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  padding: EdgeInsets.all(20 * widget.scale),
+                  padding: EdgeInsets.all(16 * scale),
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(20 * widget.scale),
+                    borderRadius: BorderRadius.circular(16 * scale),
                   ),
-                  child: Icon(
-                    icon,
-                    color: Colors.white,
-                    size: 32 * widget.scale,
-                  ),
+                  child: Icon(icon, color: Colors.white, size: 28 * scale),
                 ),
-                SizedBox(height: 24 * widget.scale),
+                SizedBox(height: 20 * scale),
                 Text(
                   title,
                   style: TextStyle(
-                    fontSize: 14 * widget.scale,
+                    fontSize: 13 * scale,
                     color: const Color(0xFF8892B0),
                     fontWeight: FontWeight.w500,
                     letterSpacing: 2,
                   ),
                 ),
-                SizedBox(height: 8 * widget.scale),
+                SizedBox(height: 8 * scale),
                 Text(
                   subtitle,
                   style: TextStyle(
-                    fontSize: 20 * widget.scale,
+                    fontSize: 16 * scale,
                     color: Colors.white,
                     fontWeight: FontWeight.w700,
                   ),
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: 24 * widget.scale),
+                SizedBox(height: 20 * scale),
                 Container(
                   padding: EdgeInsets.symmetric(
-                    horizontal: 16 * widget.scale,
-                    vertical: 8 * widget.scale,
+                    horizontal: 14 * scale,
+                    vertical: 8 * scale,
                   ),
                   decoration: BoxDecoration(
                     color: isHovering
                         ? Colors.white.withValues(alpha: 0.1)
                         : Colors.transparent,
-                    borderRadius: BorderRadius.circular(20 * widget.scale),
+                    borderRadius: BorderRadius.circular(16 * scale),
                     border: Border.all(
                       color: isHovering
                           ? Colors.white.withValues(alpha: 0.3)
@@ -331,7 +347,7 @@ class _ContactPageState extends State<ContactPage>
                       Text(
                         actionText,
                         style: TextStyle(
-                          fontSize: 12 * widget.scale,
+                          fontSize: 11 * scale,
                           color: isHovering
                               ? Colors.white
                               : const Color(0xFF8892B0),
@@ -339,10 +355,10 @@ class _ContactPageState extends State<ContactPage>
                         ),
                       ),
                       if (isHovering) ...[
-                        SizedBox(width: 8 * widget.scale),
+                        SizedBox(width: 8 * scale),
                         Icon(
                           Icons.arrow_forward_rounded,
-                          size: 14 * widget.scale,
+                          size: 12 * scale,
                           color: Colors.white,
                         ),
                       ],
@@ -350,20 +366,20 @@ class _ContactPageState extends State<ContactPage>
                   ),
                 ),
                 if (showStatus) ...[
-                  SizedBox(height: 16 * widget.scale),
+                  SizedBox(height: 14 * scale),
                   Container(
                     padding: EdgeInsets.symmetric(
-                      horizontal: 12 * widget.scale,
-                      vertical: 4 * widget.scale,
+                      horizontal: 10 * scale,
+                      vertical: 4 * scale,
                     ),
                     decoration: BoxDecoration(
                       color: const Color(0xFF64FFDA).withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(12 * widget.scale),
+                      borderRadius: BorderRadius.circular(10 * scale),
                     ),
                     child: Text(
                       'ACTIVE',
                       style: TextStyle(
-                        fontSize: 10 * widget.scale,
+                        fontSize: 9 * scale,
                         color: const Color(0xFF64FFDA),
                         fontWeight: FontWeight.w700,
                         letterSpacing: 1,
@@ -379,13 +395,13 @@ class _ContactPageState extends State<ContactPage>
     );
   }
 
-  Widget _buildSocialMediaSection() {
+  Widget _buildSocialMediaSection(double scale, bool isSmallScreen) {
     return Column(
       children: [
         Text(
           'SOCIAL CONNECTIONS',
           style: TextStyle(
-            fontSize: 14 * widget.scale,
+            fontSize: 12 * scale,
             fontWeight: FontWeight.w600,
             color: const Color(0xFF64FFDA),
             letterSpacing: 3,
@@ -393,7 +409,9 @@ class _ContactPageState extends State<ContactPage>
         ),
         SizedBox(height: 32 * widget.scale),
         Container(
-          padding: EdgeInsets.all(40 * widget.scale),
+          padding: EdgeInsets.all(
+            isSmallScreen ? 20 * widget.scale : 40 * widget.scale,
+          ),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(32 * widget.scale),
             gradient: LinearGradient(
@@ -408,10 +426,14 @@ class _ContactPageState extends State<ContactPage>
           ),
           child: Column(
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+              // Use Wrap or Column for social buttons based on space
+              Wrap(
+                spacing: 20 * scale,
+                runSpacing: 20 * scale,
+                alignment: WrapAlignment.center,
                 children: [
                   _buildSocialButton(
+                    scale: scale,
                     icon: Icons.code_rounded,
                     label: 'GitHub',
                     username: '@DevZkund',
@@ -421,8 +443,9 @@ class _ContactPageState extends State<ContactPage>
                     onHover: (value) =>
                         setState(() => _isHoveringGitHub = value),
                   ),
-                  SizedBox(width: 40 * widget.scale),
+                  // Removed SizedBox and used Wrap spacing instead
                   _buildSocialButton(
+                    scale: scale,
                     icon: Icons.linked_camera_rounded,
                     label: 'LinkedIn',
                     username: '@devzkund',
@@ -438,7 +461,7 @@ class _ContactPageState extends State<ContactPage>
               Text(
                 'Let\'s connect and collaborate',
                 style: TextStyle(
-                  fontSize: 16 * widget.scale,
+                  fontSize: 14 * scale,
                   color: const Color(0xFF8892B0),
                   fontStyle: FontStyle.italic,
                 ),
@@ -451,6 +474,7 @@ class _ContactPageState extends State<ContactPage>
   }
 
   Widget _buildSocialButton({
+    required double scale,
     required IconData icon,
     required String label,
     required String username,
@@ -466,8 +490,8 @@ class _ContactPageState extends State<ContactPage>
         onTap: () => _launchURL(url),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 300),
-          width: 200 * widget.scale,
-          padding: EdgeInsets.all(24 * widget.scale),
+          width: 180 * scale,
+          padding: EdgeInsets.all(20 * scale),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20 * widget.scale),
             gradient: LinearGradient(
@@ -496,43 +520,43 @@ class _ContactPageState extends State<ContactPage>
           child: Column(
             children: [
               Container(
-                width: 60 * widget.scale,
-                height: 60 * widget.scale,
+                width: 50 * scale,
+                height: 50 * scale,
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(icon, color: Colors.white, size: 28 * widget.scale),
+                child: Icon(icon, color: Colors.white, size: 24 * scale),
               ),
-              SizedBox(height: 16 * widget.scale),
+              SizedBox(height: 16 * scale),
               Text(
                 label,
                 style: TextStyle(
-                  fontSize: 18 * widget.scale,
+                  fontSize: 16 * scale,
                   color: Colors.white,
                   fontWeight: FontWeight.w700,
                 ),
               ),
-              SizedBox(height: 4 * widget.scale),
+              SizedBox(height: 4 * scale),
               Text(
                 username,
                 style: TextStyle(
-                  fontSize: 14 * widget.scale,
+                  fontSize: 12 * scale,
                   color: const Color(0xFF8892B0),
                 ),
               ),
-              SizedBox(height: 16 * widget.scale),
+              SizedBox(height: 16 * scale),
               AnimatedOpacity(
                 opacity: isHovering ? 1.0 : 0.0,
                 duration: const Duration(milliseconds: 200),
                 child: Container(
                   padding: EdgeInsets.symmetric(
-                    horizontal: 16 * widget.scale,
-                    vertical: 8 * widget.scale,
+                    horizontal: 12 * scale,
+                    vertical: 6 * scale,
                   ),
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12 * widget.scale),
+                    borderRadius: BorderRadius.circular(12 * scale),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -540,14 +564,14 @@ class _ContactPageState extends State<ContactPage>
                       Text(
                         'Visit Profile',
                         style: TextStyle(
-                          fontSize: 12 * widget.scale,
+                          fontSize: 10 * scale,
                           color: Colors.white,
                         ),
                       ),
-                      SizedBox(width: 8 * widget.scale),
+                      SizedBox(width: 8 * scale),
                       Icon(
                         Icons.arrow_outward_rounded,
-                        size: 12 * widget.scale,
+                        size: 10 * scale,
                         color: Colors.white,
                       ),
                     ],
@@ -561,13 +585,13 @@ class _ContactPageState extends State<ContactPage>
     );
   }
 
-  Widget _buildLocationSection() {
+  Widget _buildLocationSection(double scale, bool isSmallScreen) {
     return Column(
       children: [
         Text(
           'LOCATION & AVAILABILITY',
           style: TextStyle(
-            fontSize: 14 * widget.scale,
+            fontSize: 12 * scale,
             fontWeight: FontWeight.w600,
             color: const Color(0xFF64FFDA),
             letterSpacing: 3,
@@ -575,7 +599,9 @@ class _ContactPageState extends State<ContactPage>
         ),
         SizedBox(height: 32 * widget.scale),
         Container(
-          padding: EdgeInsets.all(40 * widget.scale),
+          padding: EdgeInsets.all(
+            isSmallScreen ? 20 * widget.scale : 40 * widget.scale,
+          ),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(32 * widget.scale),
             gradient: LinearGradient(
@@ -590,44 +616,66 @@ class _ContactPageState extends State<ContactPage>
           ),
           child: Column(
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.location_on_rounded,
-                    color: const Color(0xFF64FFDA),
-                    size: 24 * widget.scale,
-                  ),
-                  SizedBox(width: 12 * widget.scale),
-                  Text(
-                    'Mohali, Punjab, India',
-                    style: TextStyle(
-                      fontSize: 24 * widget.scale,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
+              // Responsive Row/Column for location icon + text
+              isSmallScreen
+                  ? Column(
+                      children: [
+                        Icon(
+                          Icons.location_on_rounded,
+                          color: const Color(0xFF64FFDA),
+                          size: 24 * scale,
+                        ),
+                        SizedBox(height: 8 * scale),
+                        Text(
+                          'Mohali, Punjab, India',
+                          style: TextStyle(
+                            fontSize: 20 * scale,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    )
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.location_on_rounded,
+                          color: const Color(0xFF64FFDA),
+                          size: 24 * scale,
+                        ),
+                        SizedBox(width: 12 * widget.scale),
+                        Text(
+                          'Mohali, Punjab, India',
+                          style: TextStyle(
+                            fontSize: 24 * scale,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
-              ),
+
               SizedBox(height: 24 * widget.scale),
               Text(
                 '📍 Open to remote opportunities worldwide',
                 style: TextStyle(
-                  fontSize: 16 * widget.scale,
+                  fontSize: 14 * scale,
                   color: const Color(0xFF8892B0),
                 ),
               ),
               SizedBox(height: 32 * widget.scale),
               Wrap(
-                spacing: 16 * widget.scale,
-                runSpacing: 16 * widget.scale,
+                spacing: 12 * widget.scale,
+                runSpacing: 12 * widget.scale,
                 alignment: WrapAlignment.center,
                 children: [
-                  _buildTag('Remote Work', const Color(0xFF00D1FF)),
-                  _buildTag('Full-time', const Color(0xFF64FFDA)),
-                  _buildTag('Freelance', const Color(0xFF7B61FF)),
-                  _buildTag('Contract', const Color(0xFFFF6B6B)),
-                  _buildTag('Relocation', const Color(0xFFFFD166)),
+                  _buildTag(scale, 'Remote Work', const Color(0xFF00D1FF)),
+                  _buildTag(scale, 'Full-time', const Color(0xFF64FFDA)),
+                  _buildTag(scale, 'Freelance', const Color(0xFF7B61FF)),
+                  _buildTag(scale, 'Contract', const Color(0xFFFF6B6B)),
+                  _buildTag(scale, 'Relocation', const Color(0xFFFFD166)),
                 ],
               ),
               SizedBox(height: 40 * widget.scale),
@@ -638,43 +686,12 @@ class _ContactPageState extends State<ContactPage>
                   borderRadius: BorderRadius.circular(20 * widget.scale),
                   border: Border.all(color: const Color(0xFF2D4A76), width: 1),
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.access_time_rounded,
-                      color: const Color(0xFF64FFDA),
-                      size: 20 * widget.scale,
-                    ),
-                    SizedBox(width: 12 * widget.scale),
-                    Text(
-                      'Time Zone: IST (UTC+5:30)',
-                      style: TextStyle(
-                        fontSize: 16 * widget.scale,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w500,
+                child: isSmallScreen
+                    ? Column(children: _buildTimezoneChildren(scale))
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: _buildTimezoneChildren(scale),
                       ),
-                    ),
-                    SizedBox(width: 24 * widget.scale),
-                    Container(
-                      width: 8,
-                      height: 8,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFF64FFDA),
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    SizedBox(width: 12 * widget.scale),
-                    Text(
-                      'Available Now',
-                      style: TextStyle(
-                        fontSize: 16 * widget.scale,
-                        color: const Color(0xFF64FFDA),
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
               ),
             ],
           ),
@@ -683,11 +700,51 @@ class _ContactPageState extends State<ContactPage>
     );
   }
 
-  Widget _buildTag(String text, Color color) {
+  List<Widget> _buildTimezoneChildren(double scale) {
+    return [
+      Icon(
+        Icons.access_time_rounded,
+        color: const Color(0xFF64FFDA),
+        size: 18 * scale,
+      ),
+      SizedBox(width: 12 * widget.scale),
+      Text(
+        'Time Zone: IST (UTC+5:30)',
+        style: TextStyle(
+          fontSize: 14 * scale,
+          color: Colors.white,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      SizedBox(
+        width: 24 * widget.scale,
+        height: 12 * widget.scale,
+      ), // Flexible spacer
+      Container(
+        width: 6,
+        height: 6,
+        decoration: const BoxDecoration(
+          color: Color(0xFF64FFDA),
+          shape: BoxShape.circle,
+        ),
+      ),
+      SizedBox(width: 12 * widget.scale),
+      Text(
+        'Available Now',
+        style: TextStyle(
+          fontSize: 14 * scale,
+          color: const Color(0xFF64FFDA),
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    ];
+  }
+
+  Widget _buildTag(double scale, String text, Color color) {
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: 20 * widget.scale,
-        vertical: 10 * widget.scale,
+        horizontal: 16 * scale,
+        vertical: 8 * scale,
       ),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
@@ -698,15 +755,15 @@ class _ContactPageState extends State<ContactPage>
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 8,
-            height: 8,
+            width: 6,
+            height: 6,
             decoration: BoxDecoration(color: color, shape: BoxShape.circle),
           ),
           SizedBox(width: 8 * widget.scale),
           Text(
             text,
             style: TextStyle(
-              fontSize: 14 * widget.scale,
+              fontSize: 12 * scale,
               color: color,
               fontWeight: FontWeight.w500,
             ),

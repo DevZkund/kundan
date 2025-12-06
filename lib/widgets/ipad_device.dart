@@ -83,7 +83,6 @@ class _ResponsiveIpadState extends State<ResponsiveIpad> {
           _buildCamera(scale),
           _buildVolumeButtons(scale, height),
           _buildPowerButton(scale, height),
-          _buildMagneticConnector(scale, width),
         ],
       ),
     );
@@ -257,21 +256,6 @@ class _ResponsiveIpadState extends State<ResponsiveIpad> {
         decoration: BoxDecoration(
           color: Colors.black.withValues(alpha: 0.9),
           borderRadius: BorderRadius.circular(2 * scale),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMagneticConnector(double scale, double width) {
-    return Positioned(
-      bottom: 16 * scale,
-      left: width / 2 - 150 * scale,
-      child: Container(
-        width: 300 * scale,
-        height: 8 * scale,
-        decoration: BoxDecoration(
-          color: Colors.black.withValues(alpha: 0.7),
-          borderRadius: BorderRadius.circular(4 * scale),
         ),
       ),
     );

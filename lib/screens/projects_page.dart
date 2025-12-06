@@ -210,49 +210,61 @@ class _ProjectsPageState extends State<ProjectsPage>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF0A192F),
-      body: AnimatedBuilder(
-        animation: _controller,
-        builder: (context, child) {
-          return FadeTransition(
-            opacity: _fadeAnimation,
-            child: Transform.scale(
-              scale: _scaleAnimation.value,
-              child: SingleChildScrollView(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 48 * widget.scale,
-                  vertical: 40 * widget.scale,
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final isSmallScreen = constraints.maxWidth < 700;
+          final responsiveScale = isSmallScreen
+              ? widget.scale * 0.85
+              : widget.scale;
+
+          return AnimatedBuilder(
+            animation: _controller,
+            builder: (context, child) {
+              return FadeTransition(
+                opacity: _fadeAnimation,
+                child: Transform.scale(
+                  scale: _scaleAnimation.value,
+                  child: SingleChildScrollView(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: (isSmallScreen ? 20 : 48) * widget.scale,
+                      vertical: 40 * widget.scale,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        // Header Section
+                        _buildHeaderSection(responsiveScale),
+
+                        SizedBox(height: 40 * widget.scale),
+
+                        // Category Filters
+                        _buildCategoryFilters(responsiveScale),
+
+                        SizedBox(height: 40 * widget.scale),
+
+                        // Projects Grid
+                        _buildProjectsGrid(
+                          responsiveScale,
+                          constraints.maxWidth,
+                        ),
+
+                        SizedBox(height: 60 * widget.scale),
+
+                        // Stats Section
+                        _buildStatsSection(responsiveScale),
+                      ],
+                    ),
+                  ),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    // Header Section
-                    _buildHeaderSection(),
-
-                    SizedBox(height: 40 * widget.scale),
-
-                    // Category Filters
-                    _buildCategoryFilters(),
-
-                    SizedBox(height: 40 * widget.scale),
-
-                    // Projects Grid
-                    _buildProjectsGrid(),
-
-                    SizedBox(height: 60 * widget.scale),
-
-                    // Stats Section
-                    _buildStatsSection(),
-                  ],
-                ),
-              ),
-            ),
+              );
+            },
           );
         },
       ),
     );
   }
 
-  Widget _buildHeaderSection() {
+  Widget _buildHeaderSection(double scale) {
     return AnimatedOpacity(
       opacity: _controller.value > 0.2 ? 1.0 : 0.0,
       duration: const Duration(milliseconds: 900),
@@ -265,16 +277,17 @@ class _ProjectsPageState extends State<ProjectsPage>
             child: Text(
               'PROJECT PORTFOLIO',
               style: TextStyle(
-                fontSize: 42 * widget.scale,
+                fontSize: 42 * scale,
                 fontWeight: FontWeight.w800,
                 letterSpacing: 2,
                 color: const Color(0xFF64FFDA),
               ),
+              textAlign: TextAlign.center,
             ),
           ),
           SizedBox(height: 16 * widget.scale),
           Container(
-            width: 300 * widget.scale,
+            width: 300 * scale,
             height: 3,
             decoration: BoxDecoration(
               gradient: const LinearGradient(
@@ -291,17 +304,18 @@ class _ProjectsPageState extends State<ProjectsPage>
           Text(
             '${_projects.length} Projects • 1.5+ Years of Development',
             style: TextStyle(
-              fontSize: 20 * widget.scale,
+              fontSize: 20 * scale,
               color: const Color(0xFF8892B0),
               fontWeight: FontWeight.w300,
             ),
+            textAlign: TextAlign.center,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildCategoryFilters() {
+  Widget _buildCategoryFilters(double scale) {
     return AnimatedOpacity(
       opacity: _controller.value > 0.3 ? 1.0 : 0.0,
       duration: const Duration(milliseconds: 1000),
@@ -326,8 +340,8 @@ class _ProjectsPageState extends State<ProjectsPage>
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
                 padding: EdgeInsets.symmetric(
-                  horizontal: 24 * widget.scale,
-                  vertical: 14 * widget.scale,
+                  horizontal: 24 * scale,
+                  vertical: 14 * scale,
                 ),
                 decoration: BoxDecoration(
                   gradient: _selectedCategory == index
@@ -360,7 +374,7 @@ class _ProjectsPageState extends State<ProjectsPage>
                 child: Text(
                   _categories[index],
                   style: TextStyle(
-                    fontSize: 16 * widget.scale,
+                    fontSize: 16 * scale,
                     color: _selectedCategory == index
                         ? Colors.white
                         : const Color(0xFFCCD6F6),
@@ -375,7 +389,10 @@ class _ProjectsPageState extends State<ProjectsPage>
     );
   }
 
-  Widget _buildProjectsGrid() {
+  Widget _buildProjectsGrid(double scale, double maxWidth) {
+    // Adjust grid count based on width
+    int crossAxisCount = maxWidth > 900 ? 2 : 1;
+
     return AnimatedOpacity(
       opacity: _controller.value > 0.4 ? 1.0 : 0.0,
       duration: const Duration(milliseconds: 1100),
@@ -383,20 +400,34 @@ class _ProjectsPageState extends State<ProjectsPage>
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: MediaQuery.of(context).size.width > 900 ? 2 : 1,
+          crossAxisCount: crossAxisCount,
           crossAxisSpacing: 32 * widget.scale,
           mainAxisSpacing: 32 * widget.scale,
-          childAspectRatio: 1.4,
+          childAspectRatio: crossAxisCount == 1
+              ? 1.1
+              : 1.4, // Adjust ratio for mobile
         ),
         itemCount: _filteredProjects.length,
         itemBuilder: (context, index) {
-          return _buildProjectCard(_filteredProjects[index], index);
+          return _buildProjectCard(
+            _filteredProjects[index],
+            index,
+            scale,
+            maxWidth,
+          );
         },
       ),
     );
   }
 
-  Widget _buildProjectCard(Project project, int index) {
+  Widget _buildProjectCard(
+    Project project,
+    int index,
+    double scale,
+    double maxWidth,
+  ) {
+    final isSmallCard = maxWidth < 600;
+
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
@@ -432,8 +463,8 @@ class _ProjectsPageState extends State<ProjectsPage>
                 right: 0,
                 child: Container(
                   padding: EdgeInsets.symmetric(
-                    horizontal: 16 * widget.scale,
-                    vertical: 8 * widget.scale,
+                    horizontal: 16 * scale,
+                    vertical: 8 * scale,
                   ),
                   decoration: BoxDecoration(
                     color: _getCategoryColor(project.category),
@@ -445,7 +476,7 @@ class _ProjectsPageState extends State<ProjectsPage>
                   child: Text(
                     project.category,
                     style: TextStyle(
-                      fontSize: 12 * widget.scale,
+                      fontSize: 12 * scale,
                       color: Colors.white,
                       fontWeight: FontWeight.w600,
                     ),
@@ -453,76 +484,114 @@ class _ProjectsPageState extends State<ProjectsPage>
                 ),
               ),
               Padding(
-                padding: EdgeInsets.all(32 * widget.scale),
+                padding: EdgeInsets.all(isSmallCard ? 24 * scale : 32 * scale),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            project.title,
-                            style: TextStyle(
-                              fontSize: 24 * widget.scale,
-                              fontWeight: FontWeight.w700,
-                              color: const Color(0xFFCCD6F6),
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
+                    // Title and Period Row/Column
+                    isSmallCard
+                        ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                project.title,
+                                style: TextStyle(
+                                  fontSize: 24 * scale,
+                                  fontWeight: FontWeight.w700,
+                                  color: const Color(0xFFCCD6F6),
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              SizedBox(height: 8 * scale),
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 12 * scale,
+                                  vertical: 6 * scale,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF1E3A5F),
+                                  borderRadius: BorderRadius.circular(
+                                    12 * widget.scale,
+                                  ),
+                                ),
+                                child: Text(
+                                  project.period,
+                                  style: TextStyle(
+                                    fontSize: 12 * scale,
+                                    color: const Color(0xFF64FFDA),
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          )
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  project.title,
+                                  style: TextStyle(
+                                    fontSize: 24 * scale,
+                                    fontWeight: FontWeight.w700,
+                                    color: const Color(0xFFCCD6F6),
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 12 * scale,
+                                  vertical: 6 * scale,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF1E3A5F),
+                                  borderRadius: BorderRadius.circular(
+                                    12 * widget.scale,
+                                  ),
+                                ),
+                                child: Text(
+                                  project.period,
+                                  style: TextStyle(
+                                    fontSize: 12 * scale,
+                                    color: const Color(0xFF64FFDA),
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 12 * widget.scale,
-                            vertical: 6 * widget.scale,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF1E3A5F),
-                            borderRadius: BorderRadius.circular(
-                              12 * widget.scale,
-                            ),
-                          ),
-                          child: Text(
-                            project.period,
-                            style: TextStyle(
-                              fontSize: 12 * widget.scale,
-                              color: const Color(0xFF64FFDA),
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 12 * widget.scale),
+                    SizedBox(height: 12 * scale),
                     Text(
                       project.description,
                       style: TextStyle(
-                        fontSize: 14 * widget.scale,
+                        fontSize: 14 * scale,
                         color: const Color(0xFF8892B0),
                         height: 1.6,
                       ),
                       maxLines: 3,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    SizedBox(height: 20 * widget.scale),
+                    SizedBox(height: 20 * scale),
                     Text(
                       'Role: ${project.role}',
                       style: TextStyle(
-                        fontSize: 13 * widget.scale,
+                        fontSize: 13 * scale,
                         color: const Color(0xFF64FFDA),
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    SizedBox(height: 16 * widget.scale),
+                    SizedBox(height: 16 * scale),
                     Wrap(
-                      spacing: 8 * widget.scale,
-                      runSpacing: 8 * widget.scale,
+                      spacing: 8 * scale,
+                      runSpacing: 8 * scale,
                       children: project.technologies.take(3).map((tech) {
                         return Container(
                           padding: EdgeInsets.symmetric(
-                            horizontal: 10 * widget.scale,
-                            vertical: 6 * widget.scale,
+                            horizontal: 10 * scale,
+                            vertical: 6 * scale,
                           ),
                           decoration: BoxDecoration(
                             color: const Color(
@@ -539,7 +608,7 @@ class _ProjectsPageState extends State<ProjectsPage>
                           child: Text(
                             tech,
                             style: TextStyle(
-                              fontSize: 11 * widget.scale,
+                              fontSize: 11 * scale,
                               color: const Color(0xFF8892B0),
                             ),
                           ),
@@ -553,15 +622,15 @@ class _ProjectsPageState extends State<ProjectsPage>
                         Text(
                           'View Details',
                           style: TextStyle(
-                            fontSize: 14 * widget.scale,
+                            fontSize: 14 * scale,
                             color: const Color(0xFF00D1FF),
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        SizedBox(width: 8 * widget.scale),
+                        SizedBox(width: 8 * scale),
                         Icon(
                           Icons.arrow_forward,
-                          size: 16 * widget.scale,
+                          size: 16 * scale,
                           color: const Color(0xFF00D1FF),
                         ),
                       ],
@@ -576,7 +645,7 @@ class _ProjectsPageState extends State<ProjectsPage>
     );
   }
 
-  Widget _buildStatsSection() {
+  Widget _buildStatsSection(double scale) {
     return AnimatedOpacity(
       opacity: _controller.value > 0.8 ? 1.0 : 0.0,
       duration: const Duration(milliseconds: 1300),
@@ -607,11 +676,12 @@ class _ProjectsPageState extends State<ProjectsPage>
               child: Text(
                 'PROJECT STATISTICS',
                 style: TextStyle(
-                  fontSize: 32 * widget.scale,
+                  fontSize: 32 * scale,
                   fontWeight: FontWeight.w800,
                   letterSpacing: 1.5,
                   color: const Color(0xFF64FFDA),
                 ),
+                textAlign: TextAlign.center,
               ),
             ),
             SizedBox(height: 40 * widget.scale),
@@ -620,12 +690,12 @@ class _ProjectsPageState extends State<ProjectsPage>
               runSpacing: 40 * widget.scale,
               alignment: WrapAlignment.center,
               children: [
-                _buildStatItem('8', 'Total Projects'),
-                _buildStatItem('5', 'Professional Projects'),
-                _buildStatItem('1', 'Freelance Projects'),
-                _buildStatItem('2', 'Personal Projects'),
-                _buildStatItem('98%', 'Client Satisfaction'),
-                _buildStatItem('1.5+', 'Years Experience'),
+                _buildStatItem('8', 'Total Projects', scale),
+                _buildStatItem('5', 'Professional Projects', scale),
+                _buildStatItem('1', 'Freelance Projects', scale),
+                _buildStatItem('2', 'Personal Projects', scale),
+                _buildStatItem('98%', 'Client Satisfaction', scale),
+                _buildStatItem('1.5+', 'Years Experience', scale),
               ],
             ),
           ],
@@ -634,23 +704,23 @@ class _ProjectsPageState extends State<ProjectsPage>
     );
   }
 
-  Widget _buildStatItem(String value, String label) {
+  Widget _buildStatItem(String value, String label, double scale) {
     return Column(
       children: [
         Text(
           value,
           style: TextStyle(
-            fontSize: 42 * widget.scale,
+            fontSize: 42 * scale,
             fontWeight: FontWeight.w800,
             color: const Color(0xFF64FFDA),
             letterSpacing: 1.2,
           ),
         ),
-        SizedBox(height: 8 * widget.scale),
+        SizedBox(height: 8 * scale),
         Text(
           label,
           style: TextStyle(
-            fontSize: 16 * widget.scale,
+            fontSize: 16 * scale,
             color: const Color(0xFF8892B0),
             fontWeight: FontWeight.w500,
           ),
@@ -678,229 +748,298 @@ class _ProjectsPageState extends State<ProjectsPage>
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) {
-        return Container(
-          margin: EdgeInsets.all(40 * widget.scale),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [const Color(0xFF112240), const Color(0xFF0A192F)],
-            ),
-            borderRadius: BorderRadius.circular(32 * widget.scale),
-            border: Border.all(
-              color: const Color(0xFF00D1FF).withValues(alpha: 0.3),
-              width: 2,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.5),
-                blurRadius: 40,
-                spreadRadius: 10,
+        // Use LayoutBuilder for modal responsiveness
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            final isSmallScreen = constraints.maxWidth < 600;
+            final scale = isSmallScreen ? widget.scale * 0.9 : widget.scale;
+
+            return Container(
+              margin: EdgeInsets.all(
+                isSmallScreen ? 20 * scale : 40 * widget.scale,
               ),
-            ],
-          ),
-          child: Padding(
-            padding: EdgeInsets.all(40 * widget.scale),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        project.title,
-                        style: TextStyle(
-                          fontSize: 32 * widget.scale,
-                          fontWeight: FontWeight.w800,
-                          color: const Color(0xFFCCD6F6),
-                        ),
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: () => Navigator.pop(context),
-                      icon: Icon(
-                        Icons.close,
-                        color: const Color(0xFF8892B0),
-                        size: 28 * widget.scale,
-                      ),
-                    ),
-                  ],
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [const Color(0xFF112240), const Color(0xFF0A192F)],
                 ),
-                SizedBox(height: 16 * widget.scale),
-                Row(
-                  children: [
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 16 * widget.scale,
-                        vertical: 8 * widget.scale,
-                      ),
-                      decoration: BoxDecoration(
-                        color: _getCategoryColor(project.category),
-                        borderRadius: BorderRadius.circular(20 * widget.scale),
-                      ),
-                      child: Text(
-                        project.category,
-                        style: TextStyle(
-                          fontSize: 14 * widget.scale,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 16 * widget.scale),
-                    Text(
-                      'Period: ${project.period}',
-                      style: TextStyle(
-                        fontSize: 16 * widget.scale,
-                        color: const Color(0xFF64FFDA),
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    SizedBox(width: 16 * widget.scale),
-                    Text(
-                      'Role: ${project.role}',
-                      style: TextStyle(
-                        fontSize: 16 * widget.scale,
-                        color: const Color(0xFF8892B0),
-                      ),
-                    ),
-                  ],
+                borderRadius: BorderRadius.circular(32 * widget.scale),
+                border: Border.all(
+                  color: const Color(0xFF00D1FF).withValues(alpha: 0.3),
+                  width: 2,
                 ),
-                SizedBox(height: 32 * widget.scale),
-                Text(
-                  project.description,
-                  style: TextStyle(
-                    fontSize: 18 * widget.scale,
-                    color: const Color(0xFFCCD6F6),
-                    height: 1.7,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.5),
+                    blurRadius: 40,
+                    spreadRadius: 10,
                   ),
-                ),
-                SizedBox(height: 32 * widget.scale),
-                Text(
-                  'Key Features:',
-                  style: TextStyle(
-                    fontSize: 24 * widget.scale,
-                    fontWeight: FontWeight.w700,
-                    color: const Color(0xFF64FFDA),
+                ],
+              ),
+              child: SingleChildScrollView(
+                // Add scroll view for safety
+                child: Padding(
+                  padding: EdgeInsets.all(
+                    isSmallScreen ? 24 * scale : 40 * widget.scale,
                   ),
-                ),
-                SizedBox(height: 16 * widget.scale),
-                Wrap(
-                  spacing: 16 * widget.scale,
-                  runSpacing: 12 * widget.scale,
-                  children: project.features.map((feature) {
-                    return Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 20 * widget.scale,
-                        vertical: 12 * widget.scale,
-                      ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF1E3A5F).withValues(alpha: 0.5),
-                        borderRadius: BorderRadius.circular(12 * widget.scale),
-                        border: Border.all(
-                          color: const Color(0xFF2D4A76),
-                          width: 1,
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Icon(
-                            Icons.check_circle,
-                            color: const Color(0xFF64FFDA),
-                            size: 16 * widget.scale,
+                          Expanded(
+                            child: Text(
+                              project.title,
+                              style: TextStyle(
+                                fontSize: (isSmallScreen ? 24 : 32) * scale,
+                                fontWeight: FontWeight.w800,
+                                color: const Color(0xFFCCD6F6),
+                              ),
+                            ),
                           ),
-                          SizedBox(width: 8 * widget.scale),
-                          Text(
-                            feature,
-                            style: TextStyle(
-                              fontSize: 14 * widget.scale,
-                              color: const Color(0xFFCCD6F6),
+                          IconButton(
+                            onPressed: () => Navigator.pop(context),
+                            icon: Icon(
+                              Icons.close,
+                              color: const Color(0xFF8892B0),
+                              size: 28 * scale,
                             ),
                           ),
                         ],
                       ),
-                    );
-                  }).toList(),
-                ),
-                SizedBox(height: 32 * widget.scale),
-                Text(
-                  'Technologies Used:',
-                  style: TextStyle(
-                    fontSize: 24 * widget.scale,
-                    fontWeight: FontWeight.w700,
-                    color: const Color(0xFF64FFDA),
+                      SizedBox(height: 16 * scale),
+
+                      // Responsive Meta Info
+                      isSmallScreen
+                          ? Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 16 * scale,
+                                    vertical: 8 * scale,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: _getCategoryColor(project.category),
+                                    borderRadius: BorderRadius.circular(
+                                      20 * widget.scale,
+                                    ),
+                                  ),
+                                  child: Text(
+                                    project.category,
+                                    style: TextStyle(
+                                      fontSize: 14 * scale,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: 12 * scale),
+                                Text(
+                                  'Period: ${project.period}',
+                                  style: TextStyle(
+                                    fontSize: 16 * scale,
+                                    color: const Color(0xFF64FFDA),
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                SizedBox(height: 8 * scale),
+                                Text(
+                                  'Role: ${project.role}',
+                                  style: TextStyle(
+                                    fontSize: 16 * scale,
+                                    color: const Color(0xFF8892B0),
+                                  ),
+                                ),
+                              ],
+                            )
+                          : Row(
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 16 * widget.scale,
+                                    vertical: 8 * widget.scale,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: _getCategoryColor(project.category),
+                                    borderRadius: BorderRadius.circular(
+                                      20 * widget.scale,
+                                    ),
+                                  ),
+                                  child: Text(
+                                    project.category,
+                                    style: TextStyle(
+                                      fontSize: 14 * widget.scale,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(width: 16 * widget.scale),
+                                Text(
+                                  'Period: ${project.period}',
+                                  style: TextStyle(
+                                    fontSize: 16 * widget.scale,
+                                    color: const Color(0xFF64FFDA),
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                SizedBox(width: 16 * widget.scale),
+                                Text(
+                                  'Role: ${project.role}',
+                                  style: TextStyle(
+                                    fontSize: 16 * widget.scale,
+                                    color: const Color(0xFF8892B0),
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                      SizedBox(height: 32 * scale),
+                      Text(
+                        project.description,
+                        style: TextStyle(
+                          fontSize: 18 * scale,
+                          color: const Color(0xFFCCD6F6),
+                          height: 1.7,
+                        ),
+                      ),
+                      SizedBox(height: 32 * scale),
+                      Text(
+                        'Key Features:',
+                        style: TextStyle(
+                          fontSize: 24 * scale,
+                          fontWeight: FontWeight.w700,
+                          color: const Color(0xFF64FFDA),
+                        ),
+                      ),
+                      SizedBox(height: 16 * scale),
+                      Wrap(
+                        spacing: 16 * widget.scale,
+                        runSpacing: 12 * widget.scale,
+                        children: project.features.map((feature) {
+                          return Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 20 * scale,
+                              vertical: 12 * scale,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(
+                                0xFF1E3A5F,
+                              ).withValues(alpha: 0.5),
+                              borderRadius: BorderRadius.circular(
+                                12 * widget.scale,
+                              ),
+                              border: Border.all(
+                                color: const Color(0xFF2D4A76),
+                                width: 1,
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.check_circle,
+                                  color: const Color(0xFF64FFDA),
+                                  size: 16 * scale,
+                                ),
+                                SizedBox(width: 8 * scale),
+                                Text(
+                                  feature,
+                                  style: TextStyle(
+                                    fontSize: 14 * scale,
+                                    color: const Color(0xFFCCD6F6),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                      SizedBox(height: 32 * scale),
+                      Text(
+                        'Technologies Used:',
+                        style: TextStyle(
+                          fontSize: 24 * scale,
+                          fontWeight: FontWeight.w700,
+                          color: const Color(0xFF64FFDA),
+                        ),
+                      ),
+                      SizedBox(height: 16 * scale),
+                      Wrap(
+                        spacing: 12 * widget.scale,
+                        runSpacing: 12 * widget.scale,
+                        children: project.technologies.map((tech) {
+                          return Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 20 * scale,
+                              vertical: 10 * scale,
+                            ),
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                colors: [
+                                  Color.fromARGB(191, 0, 208, 255),
+                                  Color.fromARGB(182, 100, 255, 219),
+                                ],
+                              ),
+                              borderRadius: BorderRadius.circular(
+                                20 * widget.scale,
+                              ),
+                            ),
+                            child: Text(
+                              tech,
+                              style: TextStyle(
+                                fontSize: 14 * scale,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                      SizedBox(height: 20 * scale),
+                      // Center(
+                      //   child: Container(
+                      //     padding: EdgeInsets.symmetric(
+                      //       horizontal: 32 * widget.scale,
+                      //       vertical: 16 * widget.scale,
+                      //     ),
+                      //     decoration: BoxDecoration(
+                      //       gradient: const LinearGradient(
+                      //         colors: [Color(0xFF00D1FF), Color(0xFF7B61FF)],
+                      //       ),
+                      //       borderRadius: BorderRadius.circular(30 * widget.scale),
+                      //     ),
+                      //     child: Row(
+                      //       mainAxisSize: MainAxisSize.min,
+                      //       children: [
+                      //         Icon(
+                      //           Icons.code,
+                      //           color: Colors.white,
+                      //           size: 20 * widget.scale,
+                      //         ),
+                      //         SizedBox(width: 12 * widget.scale),
+                      //         Text(
+                      //           'View Source Code',
+                      //           style: TextStyle(
+                      //             fontSize: 18 * widget.scale,
+                      //             color: Colors.white,
+                      //             fontWeight: FontWeight.w600,
+                      //           ),
+                      //         ),
+                      //       ],
+                      //     ),
+                      //   ),
+                      // ),
+                    ],
                   ),
                 ),
-                SizedBox(height: 16 * widget.scale),
-                Wrap(
-                  spacing: 12 * widget.scale,
-                  runSpacing: 12 * widget.scale,
-                  children: project.technologies.map((tech) {
-                    return Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 20 * widget.scale,
-                        vertical: 10 * widget.scale,
-                      ),
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [
-                            Color.fromARGB(191, 0, 208, 255),
-                            Color.fromARGB(182, 100, 255, 219),
-                          ],
-                        ),
-                        borderRadius: BorderRadius.circular(20 * widget.scale),
-                      ),
-                      child: Text(
-                        tech,
-                        style: TextStyle(
-                          fontSize: 14 * widget.scale,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                ),
-                SizedBox(height: 20 * widget.scale),
-                // Center(
-                //   child: Container(
-                //     padding: EdgeInsets.symmetric(
-                //       horizontal: 32 * widget.scale,
-                //       vertical: 16 * widget.scale,
-                //     ),
-                //     decoration: BoxDecoration(
-                //       gradient: const LinearGradient(
-                //         colors: [Color(0xFF00D1FF), Color(0xFF7B61FF)],
-                //       ),
-                //       borderRadius: BorderRadius.circular(30 * widget.scale),
-                //     ),
-                //     child: Row(
-                //       mainAxisSize: MainAxisSize.min,
-                //       children: [
-                //         Icon(
-                //           Icons.code,
-                //           color: Colors.white,
-                //           size: 20 * widget.scale,
-                //         ),
-                //         SizedBox(width: 12 * widget.scale),
-                //         Text(
-                //           'View Source Code',
-                //           style: TextStyle(
-                //             fontSize: 18 * widget.scale,
-                //             color: Colors.white,
-                //             fontWeight: FontWeight.w600,
-                //           ),
-                //         ),
-                //       ],
-                //     ),
-                //   ),
-                // ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         );
       },
     );

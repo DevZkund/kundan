@@ -125,57 +125,72 @@ class _EducationPageState extends State<EducationPage>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF0A192F),
-      body: AnimatedBuilder(
-        animation: _controller,
-        builder: (context, child) {
-          return FadeTransition(
-            opacity: _fadeAnimation,
-            child: Transform.translate(
-              offset: Offset(0, _slideAnimation.value),
-              child: Transform.scale(
-                scale: _scaleAnimation.value,
-                child: SingleChildScrollView(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 48 * widget.scale,
-                    vertical: 40 * widget.scale,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      // Header Section
-                      _buildHeaderSection(),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final isSmallScreen = constraints.maxWidth < 600;
+          final responsiveScale = isSmallScreen
+              ? widget.scale * 0.9
+              : widget.scale;
 
-                      SizedBox(height: 60 * widget.scale),
+          return AnimatedBuilder(
+            animation: _controller,
+            builder: (context, child) {
+              return FadeTransition(
+                opacity: _fadeAnimation,
+                child: Transform.translate(
+                  offset: Offset(0, _slideAnimation.value),
+                  child: Transform.scale(
+                    scale: _scaleAnimation.value,
+                    child: SingleChildScrollView(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: (isSmallScreen ? 20 : 48) * widget.scale,
+                        vertical: 40 * widget.scale,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          // Header Section
+                          _buildHeaderSection(responsiveScale),
 
-                      // Education Timeline
-                      _buildEducationTimeline(),
+                          SizedBox(height: 60 * widget.scale),
 
-                      SizedBox(height: 60 * widget.scale),
+                          // Education Timeline
+                          _buildEducationTimeline(
+                            responsiveScale,
+                            isSmallScreen,
+                          ),
 
-                      // Certifications Section
-                      _buildCertificationsSection(),
+                          SizedBox(height: 60 * widget.scale),
 
-                      SizedBox(height: 60 * widget.scale),
+                          // Certifications Section
+                          _buildCertificationsSection(
+                            responsiveScale,
+                            constraints.maxWidth,
+                          ),
 
-                      // Academic Stats
-                      _buildAcademicStats(),
+                          SizedBox(height: 60 * widget.scale),
 
-                      SizedBox(height: 60 * widget.scale),
+                          // Academic Stats
+                          _buildAcademicStats(responsiveScale),
 
-                      // Skills Gained Section
-                      _buildSkillsGainedSection(),
-                    ],
+                          SizedBox(height: 60 * widget.scale),
+
+                          // Skills Gained Section
+                          _buildSkillsGainedSection(responsiveScale),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
+              );
+            },
           );
         },
       ),
     );
   }
 
-  Widget _buildHeaderSection() {
+  Widget _buildHeaderSection(double scale) {
     return AnimatedOpacity(
       opacity: _controller.value > 0.2 ? 1.0 : 0.0,
       duration: const Duration(milliseconds: 900),
@@ -188,16 +203,17 @@ class _EducationPageState extends State<EducationPage>
             child: Text(
               'EDUCATION & CERTIFICATIONS',
               style: TextStyle(
-                fontSize: 42 * widget.scale,
+                fontSize: 42 * scale,
                 fontWeight: FontWeight.w800,
                 letterSpacing: 2,
                 color: const Color(0xFFCCD6F6),
               ),
+              textAlign: TextAlign.center,
             ),
           ),
           SizedBox(height: 16 * widget.scale),
           Container(
-            width: 350 * widget.scale,
+            width: 350 * scale,
             height: 3,
             decoration: BoxDecoration(
               gradient: const LinearGradient(
@@ -214,17 +230,18 @@ class _EducationPageState extends State<EducationPage>
           Text(
             '6 Years of Academic Excellence • 2 Professional Certifications',
             style: TextStyle(
-              fontSize: 20 * widget.scale,
+              fontSize: 20 * scale,
               color: const Color(0xFF8892B0),
               fontWeight: FontWeight.w300,
             ),
+            textAlign: TextAlign.center,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildEducationTimeline() {
+  Widget _buildEducationTimeline(double scale, bool isSmallScreen) {
     return AnimatedOpacity(
       opacity: _controller.value > 0.3 ? 1.0 : 0.0,
       duration: const Duration(milliseconds: 1100),
@@ -233,11 +250,12 @@ class _EducationPageState extends State<EducationPage>
           Text(
             'ACADEMIC JOURNEY',
             style: TextStyle(
-              fontSize: 32 * widget.scale,
+              fontSize: 32 * scale,
               fontWeight: FontWeight.w800,
               color: const Color(0xFFCCD6F6),
               letterSpacing: 1.5,
             ),
+            textAlign: TextAlign.center,
           ),
           SizedBox(height: 40 * widget.scale),
 
@@ -245,7 +263,12 @@ class _EducationPageState extends State<EducationPage>
             constraints: BoxConstraints(maxWidth: 1200 * widget.scale),
             child: Column(
               children: List.generate(_educationTimeline.length, (index) {
-                return _buildEducationCard(_educationTimeline[index], index);
+                return _buildEducationCard(
+                  _educationTimeline[index],
+                  index,
+                  scale,
+                  isSmallScreen,
+                ); // Fix: passed scale and isSmallScreen
               }),
             ),
           ),
@@ -254,7 +277,12 @@ class _EducationPageState extends State<EducationPage>
     );
   }
 
-  Widget _buildEducationCard(Education education, int index) {
+  Widget _buildEducationCard(
+    Education education,
+    int index,
+    double scale,
+    bool isSmallScreen,
+  ) {
     return Padding(
       padding: EdgeInsets.only(bottom: 40 * widget.scale),
       child: Row(
@@ -293,7 +321,9 @@ class _EducationPageState extends State<EducationPage>
               if (index < _educationTimeline.length - 1)
                 Container(
                   width: 2,
-                  height: 100 * widget.scale,
+                  height: isSmallScreen
+                      ? 150 * scale
+                      : 100 * widget.scale, // Adjust height for mobile
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
@@ -305,7 +335,7 @@ class _EducationPageState extends State<EducationPage>
                 ),
             ],
           ),
-          SizedBox(width: 32 * widget.scale),
+          SizedBox(width: isSmallScreen ? 16 * scale : 32 * widget.scale),
 
           // Education Card
           Expanded(
@@ -317,7 +347,9 @@ class _EducationPageState extends State<EducationPage>
                 },
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 400),
-                  padding: EdgeInsets.all(40 * widget.scale),
+                  padding: EdgeInsets.all(
+                    isSmallScreen ? 20 * scale : 40 * widget.scale,
+                  ),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
@@ -343,65 +375,121 @@ class _EducationPageState extends State<EducationPage>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Column(
+                      isSmallScreen
+                          ? Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   education.degree,
                                   style: TextStyle(
-                                    fontSize: 28 * widget.scale,
+                                    fontSize: 24 * scale,
                                     fontWeight: FontWeight.w700,
                                     color: const Color(0xFFCCD6F6),
                                   ),
                                 ),
-                                SizedBox(height: 8 * widget.scale),
+                                SizedBox(height: 8 * scale),
                                 Text(
                                   education.institution,
                                   style: TextStyle(
-                                    fontSize: 18 * widget.scale,
+                                    fontSize: 16 * scale,
                                     color: const Color(0xFF8892B0),
+                                  ),
+                                ),
+                                SizedBox(height: 12 * scale),
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 16 * scale,
+                                    vertical: 8 * scale,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: education.color.withValues(
+                                      alpha: 0.2,
+                                    ),
+                                    borderRadius: BorderRadius.circular(
+                                      20 * widget.scale,
+                                    ),
+                                    border: Border.all(
+                                      color: education.color.withValues(
+                                        alpha: 0.4,
+                                      ),
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: Text(
+                                    education.period,
+                                    style: TextStyle(
+                                      fontSize: 13 * scale,
+                                      color: education.color,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            )
+                          : Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        education.degree,
+                                        style: TextStyle(
+                                          fontSize: 28 * widget.scale,
+                                          fontWeight: FontWeight.w700,
+                                          color: const Color(0xFFCCD6F6),
+                                        ),
+                                      ),
+                                      SizedBox(height: 8 * widget.scale),
+                                      Text(
+                                        education.institution,
+                                        style: TextStyle(
+                                          fontSize: 18 * widget.scale,
+                                          color: const Color(0xFF8892B0),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 20 * widget.scale,
+                                    vertical: 10 * widget.scale,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: education.color.withValues(
+                                      alpha: 0.2,
+                                    ),
+                                    borderRadius: BorderRadius.circular(
+                                      20 * widget.scale,
+                                    ),
+                                    border: Border.all(
+                                      color: education.color.withValues(
+                                        alpha: 0.4,
+                                      ),
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: Text(
+                                    education.period,
+                                    style: TextStyle(
+                                      fontSize: 14 * widget.scale,
+                                      color: education.color,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
                                 ),
                               ],
                             ),
-                          ),
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 20 * widget.scale,
-                              vertical: 10 * widget.scale,
-                            ),
-                            decoration: BoxDecoration(
-                              color: education.color.withValues(alpha: 0.2),
-                              borderRadius: BorderRadius.circular(
-                                20 * widget.scale,
-                              ),
-                              border: Border.all(
-                                color: education.color.withValues(alpha: 0.4),
-                                width: 1,
-                              ),
-                            ),
-                            child: Text(
-                              education.period,
-                              style: TextStyle(
-                                fontSize: 14 * widget.scale,
-                                color: education.color,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
                       SizedBox(height: 24 * widget.scale),
                       Row(
                         children: [
                           Container(
                             padding: EdgeInsets.symmetric(
-                              horizontal: 20 * widget.scale,
-                              vertical: 10 * widget.scale,
+                              horizontal: 20 * scale,
+                              vertical: 10 * scale,
                             ),
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
@@ -419,13 +507,13 @@ class _EducationPageState extends State<EducationPage>
                                 Icon(
                                   Icons.grade,
                                   color: Colors.white,
-                                  size: 16 * widget.scale,
+                                  size: 16 * scale,
                                 ),
-                                SizedBox(width: 8 * widget.scale),
+                                SizedBox(width: 8 * scale),
                                 Text(
                                   'GPA: ${education.gpa}',
                                   style: TextStyle(
-                                    fontSize: 16 * widget.scale,
+                                    fontSize: 16 * scale,
                                     color: Colors.white,
                                     fontWeight: FontWeight.w600,
                                   ),
@@ -439,7 +527,7 @@ class _EducationPageState extends State<EducationPage>
                       Text(
                         education.description,
                         style: TextStyle(
-                          fontSize: 16 * widget.scale,
+                          fontSize: 16 * scale,
                           color: const Color(0xFF8892B0),
                           height: 1.7,
                         ),
@@ -455,8 +543,8 @@ class _EducationPageState extends State<EducationPage>
                         ) {
                           return Container(
                             padding: EdgeInsets.symmetric(
-                              horizontal: 16 * widget.scale,
-                              vertical: 8 * widget.scale,
+                              horizontal: 16 * scale,
+                              vertical: 8 * scale,
                             ),
                             decoration: BoxDecoration(
                               color: const Color(
@@ -476,13 +564,13 @@ class _EducationPageState extends State<EducationPage>
                                 Icon(
                                   Icons.check_circle,
                                   color: education.color,
-                                  size: 14 * widget.scale,
+                                  size: 14 * scale,
                                 ),
-                                SizedBox(width: 8 * widget.scale),
+                                SizedBox(width: 8 * scale),
                                 Text(
                                   achievement,
                                   style: TextStyle(
-                                    fontSize: 13 * widget.scale,
+                                    fontSize: 13 * scale,
                                     color: const Color(0xFFCCD6F6),
                                   ),
                                 ),
@@ -498,15 +586,15 @@ class _EducationPageState extends State<EducationPage>
                           Text(
                             'View Details',
                             style: TextStyle(
-                              fontSize: 15 * widget.scale,
+                              fontSize: 15 * scale,
                               color: education.color,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                          SizedBox(width: 8 * widget.scale),
+                          SizedBox(width: 8 * scale),
                           Icon(
                             Icons.arrow_forward,
-                            size: 16 * widget.scale,
+                            size: 16 * scale,
                             color: education.color,
                           ),
                         ],
@@ -522,7 +610,7 @@ class _EducationPageState extends State<EducationPage>
     );
   }
 
-  Widget _buildCertificationsSection() {
+  Widget _buildCertificationsSection(double scale, double maxWidth) {
     return AnimatedOpacity(
       opacity: _controller.value > 0.6 ? 1.0 : 0.0,
       duration: const Duration(milliseconds: 1300),
@@ -546,40 +634,80 @@ class _EducationPageState extends State<EducationPage>
         ),
         child: Column(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'PROFESSIONAL CERTIFICATIONS',
-                  style: TextStyle(
-                    fontSize: 28 * widget.scale,
-                    fontWeight: FontWeight.w800,
-                    color: const Color(0xFFCCD6F6),
-                    letterSpacing: 1.5,
+            maxWidth < 700
+                ? Column(
+                    children: [
+                      Text(
+                        'PROFESSIONAL CERTIFICATIONS',
+                        style: TextStyle(
+                          fontSize: 24 * scale,
+                          fontWeight: FontWeight.w800,
+                          color: const Color(0xFFCCD6F6),
+                          letterSpacing: 1.5,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: 16 * scale),
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 20 * widget.scale,
+                          vertical: 10 * widget.scale,
+                        ),
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFF00D1FF), Color(0xFF64FFDA)],
+                          ),
+                          borderRadius: BorderRadius.circular(
+                            20 * widget.scale,
+                          ),
+                        ),
+                        child: Text(
+                          '2 Certifications',
+                          style: TextStyle(
+                            fontSize: 16 * scale,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'PROFESSIONAL CERTIFICATIONS',
+                        style: TextStyle(
+                          fontSize: 28 * widget.scale,
+                          fontWeight: FontWeight.w800,
+                          color: const Color(0xFFCCD6F6),
+                          letterSpacing: 1.5,
+                        ),
+                      ),
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 20 * widget.scale,
+                          vertical: 10 * widget.scale,
+                        ),
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFF00D1FF), Color(0xFF64FFDA)],
+                          ),
+                          borderRadius: BorderRadius.circular(
+                            20 * widget.scale,
+                          ),
+                        ),
+                        child: Text(
+                          '2 Certifications',
+                          style: TextStyle(
+                            fontSize: 16 * widget.scale,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 20 * widget.scale,
-                    vertical: 10 * widget.scale,
-                  ),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF00D1FF), Color(0xFF64FFDA)],
-                    ),
-                    borderRadius: BorderRadius.circular(20 * widget.scale),
-                  ),
-                  child: Text(
-                    '2 Certifications',
-                    style: TextStyle(
-                      fontSize: 16 * widget.scale,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ],
-            ),
             SizedBox(height: 40 * widget.scale),
 
             Wrap(
@@ -587,7 +715,7 @@ class _EducationPageState extends State<EducationPage>
               runSpacing: 32 * widget.scale,
               alignment: WrapAlignment.center,
               children: _certifications.map((certification) {
-                return _buildCertificationCard(certification);
+                return _buildCertificationCard(certification, scale, maxWidth);
               }).toList(),
             ),
           ],
@@ -596,7 +724,11 @@ class _EducationPageState extends State<EducationPage>
     );
   }
 
-  Widget _buildCertificationCard(Certification certification) {
+  Widget _buildCertificationCard(
+    Certification certification,
+    double scale,
+    double maxWidth,
+  ) {
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
@@ -604,7 +736,7 @@ class _EducationPageState extends State<EducationPage>
           _showCertificationDetails(context, certification);
         },
         child: Container(
-          width: 400 * widget.scale,
+          width: maxWidth < 900 ? double.infinity : 400 * widget.scale,
           padding: EdgeInsets.all(32 * widget.scale),
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -636,7 +768,7 @@ class _EducationPageState extends State<EducationPage>
                     child: Icon(
                       Icons.verified,
                       color: certification.color,
-                      size: 32 * widget.scale,
+                      size: 32 * scale,
                     ),
                   ),
                   Container(
@@ -651,7 +783,7 @@ class _EducationPageState extends State<EducationPage>
                     child: Text(
                       certification.date,
                       style: TextStyle(
-                        fontSize: 14 * widget.scale,
+                        fontSize: 14 * scale,
                         color: certification.color,
                         fontWeight: FontWeight.w600,
                       ),
@@ -663,7 +795,7 @@ class _EducationPageState extends State<EducationPage>
               Text(
                 certification.title,
                 style: TextStyle(
-                  fontSize: 24 * widget.scale,
+                  fontSize: 24 * scale,
                   fontWeight: FontWeight.w700,
                   color: const Color(0xFFCCD6F6),
                 ),
@@ -672,7 +804,7 @@ class _EducationPageState extends State<EducationPage>
               Text(
                 'Issued by: ${certification.issuer}',
                 style: TextStyle(
-                  fontSize: 16 * widget.scale,
+                  fontSize: 16 * scale,
                   color: certification.color,
                   fontWeight: FontWeight.w600,
                 ),
@@ -681,7 +813,7 @@ class _EducationPageState extends State<EducationPage>
               Text(
                 certification.description,
                 style: TextStyle(
-                  fontSize: 15 * widget.scale,
+                  fontSize: 15 * scale,
                   color: const Color(0xFF8892B0),
                   height: 1.6,
                 ),
@@ -702,14 +834,14 @@ class _EducationPageState extends State<EducationPage>
                     Icon(
                       Icons.fingerprint,
                       color: certification.color,
-                      size: 18 * widget.scale,
+                      size: 18 * scale,
                     ),
                     SizedBox(width: 12 * widget.scale),
                     Expanded(
                       child: Text(
                         'Credential ID: ${certification.credentialId}',
                         style: TextStyle(
-                          fontSize: 13 * widget.scale,
+                          fontSize: 13 * scale,
                           color: const Color(0xFFCCD6F6),
                         ),
                       ),
@@ -724,7 +856,7 @@ class _EducationPageState extends State<EducationPage>
     );
   }
 
-  Widget _buildAcademicStats() {
+  Widget _buildAcademicStats(double scale) {
     return AnimatedOpacity(
       opacity: _controller.value > 0.8 ? 1.0 : 0.0,
       duration: const Duration(milliseconds: 1500),
@@ -733,15 +865,17 @@ class _EducationPageState extends State<EducationPage>
           Text(
             'ACADEMIC ACHIEVEMENTS',
             style: TextStyle(
-              fontSize: 32 * widget.scale,
+              fontSize: 32 * scale,
               fontWeight: FontWeight.w800,
               color: const Color(0xFFCCD6F6),
               letterSpacing: 1.5,
             ),
+            textAlign: TextAlign.center,
           ),
           SizedBox(height: 40 * widget.scale),
 
           Container(
+            width: double.infinity,
             padding: EdgeInsets.all(40 * widget.scale),
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -758,32 +892,38 @@ class _EducationPageState extends State<EducationPage>
                 width: 2,
               ),
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+            child: Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 20 * widget.scale,
+              runSpacing: 20 * widget.scale,
               children: [
                 _buildStatItem(
                   '6',
                   'Years of Education',
                   Icons.school,
                   const Color(0xFF00D1FF),
+                  scale,
                 ),
                 _buildStatItem(
                   '2',
                   'Degrees Earned',
                   Icons.workspace_premium,
                   const Color(0xFF64FFDA),
+                  scale,
                 ),
                 _buildStatItem(
                   '8.25',
                   'Average GPA',
                   Icons.leaderboard,
                   const Color(0xFF7B61FF),
+                  scale,
                 ),
                 _buildStatItem(
                   '15+',
                   'Academic Projects',
                   Icons.code,
                   const Color(0xFFFFD166),
+                  scale,
                 ),
               ],
             ),
@@ -798,58 +938,45 @@ class _EducationPageState extends State<EducationPage>
     String label,
     IconData icon,
     Color color,
+    double scale,
   ) {
-    return Column(
-      children: [
-        Container(
-          width: 100 * widget.scale,
-          height: 100 * widget.scale,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [color, color.withValues(alpha: 0.7)],
+    return SizedBox(
+      width: 160 * widget.scale,
+      child: Column(
+        children: [
+          Container(
+            padding: EdgeInsets.all(16 * widget.scale),
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
             ),
-            boxShadow: [
-              BoxShadow(
-                color: color.withValues(alpha: 0.3),
-                blurRadius: 15,
-                spreadRadius: 5,
-              ),
-            ],
+            child: Icon(icon, color: color, size: 32 * scale),
           ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, color: Colors.white, size: 28 * widget.scale),
-              SizedBox(height: 8 * widget.scale),
-              Text(
-                value,
-                style: TextStyle(
-                  fontSize: 20 * widget.scale,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-            ],
+          SizedBox(height: 16 * widget.scale),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 36 * scale,
+              fontWeight: FontWeight.w800,
+              color: color,
+            ),
           ),
-        ),
-        SizedBox(height: 16 * widget.scale),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 14 * widget.scale,
-            color: const Color(0xFF8892B0),
-            fontWeight: FontWeight.w500,
+          SizedBox(height: 8 * widget.scale),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 14 * scale,
+              color: const Color(0xFF8892B0),
+              fontWeight: FontWeight.w500,
+            ),
+            textAlign: TextAlign.center,
           ),
-          textAlign: TextAlign.center,
-        ),
-      ],
+        ],
+      ),
     );
   }
 
-  Widget _buildSkillsGainedSection() {
+  Widget _buildSkillsGainedSection(double scale) {
     return AnimatedOpacity(
       opacity: _controller.value > 0.9 ? 1.0 : 0.0,
       duration: const Duration(milliseconds: 1700),
@@ -873,11 +1000,12 @@ class _EducationPageState extends State<EducationPage>
             Text(
               'SKILLS ACQUIRED THROUGH EDUCATION',
               style: TextStyle(
-                fontSize: 28 * widget.scale,
+                fontSize: 28 * scale,
                 fontWeight: FontWeight.w800,
                 color: const Color(0xFFCCD6F6),
                 letterSpacing: 1.5,
               ),
+              textAlign: TextAlign.center,
             ),
             SizedBox(height: 40 * widget.scale),
 
@@ -890,41 +1018,49 @@ class _EducationPageState extends State<EducationPage>
                   'Mobile Development',
                   Icons.mobile_friendly,
                   const Color(0xFF00D1FF),
+                  scale,
                 ),
                 _buildAcquiredSkill(
                   'Software Engineering',
                   Icons.engineering,
                   const Color(0xFF64FFDA),
+                  scale,
                 ),
                 _buildAcquiredSkill(
                   'Database Management',
                   Icons.storage,
                   const Color(0xFF7B61FF),
+                  scale,
                 ),
                 _buildAcquiredSkill(
                   'UI/UX Design',
                   Icons.design_services,
                   const Color(0xFFFFD166),
+                  scale,
                 ),
                 _buildAcquiredSkill(
                   'Algorithms',
                   Icons.psychology,
                   const Color(0xFFEF476F),
+                  scale,
                 ),
                 _buildAcquiredSkill(
                   'Web Technologies',
                   Icons.language,
                   const Color(0xFF06D6A0),
+                  scale,
                 ),
                 _buildAcquiredSkill(
                   'Project Management',
                   Icons.assignment,
                   const Color(0xFF118AB2),
+                  scale,
                 ),
                 _buildAcquiredSkill(
                   'Research Methodology',
                   Icons.science,
                   const Color(0xFF073B4C),
+                  scale,
                 ),
               ],
             ),
@@ -968,11 +1104,16 @@ class _EducationPageState extends State<EducationPage>
     );
   }
 
-  Widget _buildAcquiredSkill(String skill, IconData icon, Color color) {
+  Widget _buildAcquiredSkill(
+    String skill,
+    IconData icon,
+    Color color,
+    double scale,
+  ) {
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: 24 * widget.scale,
-        vertical: 16 * widget.scale,
+        horizontal: 24 * scale,
+        vertical: 16 * scale,
       ),
       decoration: BoxDecoration(
         color: const Color(0xFF1E3A5F).withValues(alpha: 0.6),
@@ -982,12 +1123,12 @@ class _EducationPageState extends State<EducationPage>
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, color: color, size: 20 * widget.scale),
-          SizedBox(width: 12 * widget.scale),
+          Icon(icon, color: color, size: 20 * scale),
+          SizedBox(width: 12 * scale),
           Text(
             skill,
             style: TextStyle(
-              fontSize: 16 * widget.scale,
+              fontSize: 16 * scale,
               color: const Color(0xFFCCD6F6),
               fontWeight: FontWeight.w500,
             ),
@@ -1003,225 +1144,206 @@ class _EducationPageState extends State<EducationPage>
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) {
-        return Container(
-          margin: EdgeInsets.all(40 * widget.scale),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [const Color(0xFF112240), const Color(0xFF0A192F)],
-            ),
-            borderRadius: BorderRadius.circular(32 * widget.scale),
-            border: Border.all(
-              color: education.color.withValues(alpha: 0.3),
-              width: 2,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: education.color.withValues(alpha: 0.2),
-                blurRadius: 40,
-                spreadRadius: 10,
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            final isSmallScreen = constraints.maxWidth < 600;
+            final scale = isSmallScreen ? widget.scale * 0.9 : widget.scale;
+
+            return Container(
+              margin: EdgeInsets.all(
+                isSmallScreen ? 20 * scale : 40 * widget.scale,
               ),
-            ],
-          ),
-          child: Padding(
-            padding: EdgeInsets.all(40 * widget.scale),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [const Color(0xFF112240), const Color(0xFF0A192F)],
+                ),
+                borderRadius: BorderRadius.circular(32 * widget.scale),
+                border: Border.all(
+                  color: education.color.withValues(alpha: 0.3),
+                  width: 2,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: education.color.withValues(alpha: 0.2),
+                    blurRadius: 40,
+                    spreadRadius: 10,
+                  ),
+                ],
+              ),
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsets.all(
+                    isSmallScreen ? 24 * scale : 40 * widget.scale,
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            education.degree,
-                            style: TextStyle(
-                              fontSize: 32 * widget.scale,
-                              fontWeight: FontWeight.w800,
-                              color: const Color(0xFFCCD6F6),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  education.degree,
+                                  style: TextStyle(
+                                    fontSize: (isSmallScreen ? 24 : 32) * scale,
+                                    fontWeight: FontWeight.w800,
+                                    color: const Color(0xFFCCD6F6),
+                                  ),
+                                ),
+                                SizedBox(height: 8 * scale),
+                                Text(
+                                  education.institution,
+                                  style: TextStyle(
+                                    fontSize: (isSmallScreen ? 16 : 20) * scale,
+                                    color: const Color(0xFF8892B0),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          SizedBox(height: 8 * widget.scale),
-                          Text(
-                            education.institution,
-                            style: TextStyle(
-                              fontSize: 20 * widget.scale,
+                          IconButton(
+                            onPressed: () => Navigator.pop(context),
+                            icon: Icon(
+                              Icons.close,
                               color: const Color(0xFF8892B0),
+                              size: 28 * scale,
                             ),
                           ),
                         ],
                       ),
-                    ),
-                    IconButton(
-                      onPressed: () => Navigator.pop(context),
-                      icon: Icon(
-                        Icons.close,
-                        color: const Color(0xFF8892B0),
-                        size: 28 * widget.scale,
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 24 * widget.scale),
-                Row(
-                  children: [
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 20 * widget.scale,
-                        vertical: 10 * widget.scale,
-                      ),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            education.color,
-                            education.color.withValues(alpha: 0.7),
-                          ],
-                        ),
-                        borderRadius: BorderRadius.circular(20 * widget.scale),
-                      ),
-                      child: Row(
+                      SizedBox(height: 24 * scale),
+                      Row(
                         children: [
-                          Icon(
-                            Icons.calendar_today,
-                            color: Colors.white,
-                            size: 16 * widget.scale,
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 20 * scale,
+                              vertical: 10 * scale,
+                            ),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  education.color,
+                                  education.color.withValues(alpha: 0.7),
+                                ],
+                              ),
+                              borderRadius: BorderRadius.circular(
+                                20 * widget.scale,
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.calendar_today,
+                                  color: Colors.white,
+                                  size: 16 * scale,
+                                ),
+                                SizedBox(width: 8 * scale),
+                                Text(
+                                  education.period,
+                                  style: TextStyle(
+                                    fontSize: 16 * scale,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                          SizedBox(width: 8 * widget.scale),
-                          Text(
-                            education.period,
-                            style: TextStyle(
-                              fontSize: 16 * widget.scale,
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600,
+                          SizedBox(width: 16 * scale),
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 20 * scale,
+                              vertical: 10 * scale,
+                            ),
+                            decoration: BoxDecoration(
+                              color: education.color.withValues(alpha: 0.2),
+                              borderRadius: BorderRadius.circular(
+                                20 * widget.scale,
+                              ),
+                              border: Border.all(
+                                color: education.color.withValues(alpha: 0.4),
+                                width: 1,
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.grade,
+                                  color: education.color,
+                                  size: 16 * scale,
+                                ),
+                                SizedBox(width: 8 * scale),
+                                Text(
+                                  'GPA: ${education.gpa}',
+                                  style: TextStyle(
+                                    fontSize: 16 * scale,
+                                    color: education.color,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
                       ),
-                    ),
-                    SizedBox(width: 16 * widget.scale),
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 20 * widget.scale,
-                        vertical: 10 * widget.scale,
-                      ),
-                      decoration: BoxDecoration(
-                        color: education.color.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(20 * widget.scale),
-                        border: Border.all(
-                          color: education.color.withValues(alpha: 0.4),
-                          width: 1,
+                      SizedBox(height: 32 * scale),
+                      Text(
+                        education.description,
+                        style: TextStyle(
+                          fontSize: 18 * scale,
+                          color: const Color(0xFFCCD6F6),
+                          height: 1.7,
                         ),
                       ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.grade,
-                            color: education.color,
-                            size: 16 * widget.scale,
-                          ),
-                          SizedBox(width: 8 * widget.scale),
-                          Text(
-                            'GPA: ${education.gpa}',
-                            style: TextStyle(
-                              fontSize: 16 * widget.scale,
-                              color: education.color,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 32 * widget.scale),
-                Text(
-                  education.description,
-                  style: TextStyle(
-                    fontSize: 18 * widget.scale,
-                    color: const Color(0xFFCCD6F6),
-                    height: 1.7,
-                  ),
-                ),
-                SizedBox(height: 32 * widget.scale),
-                Text(
-                  'Key Achievements:',
-                  style: TextStyle(
-                    fontSize: 24 * widget.scale,
-                    fontWeight: FontWeight.w700,
-                    color: education.color,
-                  ),
-                ),
-                SizedBox(height: 16 * widget.scale),
-                ...education.achievements.map((achievement) {
-                  return Padding(
-                    padding: EdgeInsets.only(bottom: 12 * widget.scale),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Icon(
-                          Icons.check_circle,
+                      SizedBox(height: 32 * scale),
+                      Text(
+                        'Key Achievements:',
+                        style: TextStyle(
+                          fontSize: 24 * scale,
+                          fontWeight: FontWeight.w700,
                           color: education.color,
-                          size: 18 * widget.scale,
                         ),
-                        SizedBox(width: 12 * widget.scale),
-                        Expanded(
-                          child: Text(
-                            achievement,
-                            style: TextStyle(
-                              fontSize: 16 * widget.scale,
-                              color: const Color(0xFFCCD6F6),
-                              height: 1.6,
-                            ),
+                      ),
+                      SizedBox(height: 16 * scale),
+                      ...education.achievements.map((achievement) {
+                        return Padding(
+                          padding: EdgeInsets.only(bottom: 12 * scale),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Icon(
+                                Icons.check_circle,
+                                color: education.color,
+                                size: 18 * scale,
+                              ),
+                              SizedBox(width: 12 * scale),
+                              Expanded(
+                                child: Text(
+                                  achievement,
+                                  style: TextStyle(
+                                    fontSize: 16 * scale,
+                                    color: const Color(0xFFCCD6F6),
+                                    height: 1.6,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                      ],
-                    ),
-                  );
-                }),
-                SizedBox(height: 20 * widget.scale),
-                // Center(
-                //   child: Container(
-                //     padding: EdgeInsets.symmetric(
-                //       horizontal: 32 * widget.scale,
-                //       vertical: 16 * widget.scale,
-                //     ),
-                //     decoration: BoxDecoration(
-                //       gradient: LinearGradient(
-                //         colors: [
-                //           education.color,
-                //           education.color.withValues(alpha: 0.7),
-                //         ],
-                //       ),
-                //       borderRadius: BorderRadius.circular(30 * widget.scale),
-                //     ),
-                //     child: Row(
-                //       mainAxisSize: MainAxisSize.min,
-                //       children: [
-                //         Icon(
-                //           Icons.download,
-                //           color: Colors.white,
-                //           size: 20 * widget.scale,
-                //         ),
-                //         SizedBox(width: 12 * widget.scale),
-                //         Text(
-                //           'View Transcript',
-                //           style: TextStyle(
-                //             fontSize: 18 * widget.scale,
-                //             color: Colors.white,
-                //             fontWeight: FontWeight.w600,
-                //           ),
-                //         ),
-                //       ],
-                //     ),
-                //   ),
-                // ),
-              ],
-            ),
-          ),
+                        );
+                      }),
+                      SizedBox(height: 20 * scale),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
         );
       },
     );
@@ -1236,222 +1358,207 @@ class _EducationPageState extends State<EducationPage>
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) {
-        return Container(
-          margin: EdgeInsets.all(40 * widget.scale),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [const Color(0xFF112240), const Color(0xFF0A192F)],
-            ),
-            borderRadius: BorderRadius.circular(32 * widget.scale),
-            border: Border.all(
-              color: certification.color.withValues(alpha: 0.3),
-              width: 2,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: certification.color.withValues(alpha: 0.2),
-                blurRadius: 40,
-                spreadRadius: 10,
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            final isSmallScreen = constraints.maxWidth < 600;
+            final scale = isSmallScreen ? widget.scale * 0.9 : widget.scale;
+
+            return Container(
+              margin: EdgeInsets.all(
+                isSmallScreen ? 20 * scale : 40 * widget.scale,
               ),
-            ],
-          ),
-          child: Padding(
-            padding: EdgeInsets.all(40 * widget.scale),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.verified,
-                                color: certification.color,
-                                size: 32 * widget.scale,
-                              ),
-                              SizedBox(width: 16 * widget.scale),
-                              Text(
-                                certification.title,
-                                style: TextStyle(
-                                  fontSize: 32 * widget.scale,
-                                  fontWeight: FontWeight.w800,
-                                  color: const Color(0xFFCCD6F6),
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 8 * widget.scale),
-                          Text(
-                            'Issued by: ${certification.issuer}',
-                            style: TextStyle(
-                              fontSize: 20 * widget.scale,
-                              color: certification.color,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: () => Navigator.pop(context),
-                      icon: Icon(
-                        Icons.close,
-                        color: const Color(0xFF8892B0),
-                        size: 28 * widget.scale,
-                      ),
-                    ),
-                  ],
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [const Color(0xFF112240), const Color(0xFF0A192F)],
                 ),
-                SizedBox(height: 24 * widget.scale),
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 20 * widget.scale,
-                    vertical: 10 * widget.scale,
-                  ),
-                  decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(32 * widget.scale),
+                border: Border.all(
+                  color: certification.color.withValues(alpha: 0.3),
+                  width: 2,
+                ),
+                boxShadow: [
+                  BoxShadow(
                     color: certification.color.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(20 * widget.scale),
-                    border: Border.all(
-                      color: certification.color.withValues(alpha: 0.4),
-                      width: 1,
-                    ),
+                    blurRadius: 40,
+                    spreadRadius: 10,
                   ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.calendar_today,
-                        color: certification.color,
-                        size: 16 * widget.scale,
-                      ),
-                      SizedBox(width: 8 * widget.scale),
-                      Text(
-                        'Issued: ${certification.date}',
-                        style: TextStyle(
-                          fontSize: 16 * widget.scale,
-                          color: certification.color,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 32 * widget.scale),
-                Text(
-                  certification.description,
-                  style: TextStyle(
-                    fontSize: 18 * widget.scale,
-                    color: const Color(0xFFCCD6F6),
-                    height: 1.7,
-                  ),
-                ),
-                SizedBox(height: 32 * widget.scale),
-                Container(
-                  padding: EdgeInsets.all(20 * widget.scale),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF1E3A5F).withValues(alpha: 0.5),
-                    borderRadius: BorderRadius.circular(16 * widget.scale),
-                    border: Border.all(
-                      color: certification.color.withValues(alpha: 0.2),
-                      width: 1,
-                    ),
+                ],
+              ),
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsets.all(
+                    isSmallScreen ? 24 * scale : 40 * widget.scale,
                   ),
                   child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Credential Information',
-                        style: TextStyle(
-                          fontSize: 20 * widget.scale,
-                          fontWeight: FontWeight.w700,
-                          color: certification.color,
-                        ),
-                      ),
-                      SizedBox(height: 12 * widget.scale),
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Icon(
-                            Icons.fingerprint,
-                            color: certification.color,
-                            size: 20 * widget.scale,
-                          ),
-                          SizedBox(width: 12 * widget.scale),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  'Credential ID:',
-                                  style: TextStyle(
-                                    fontSize: 14 * widget.scale,
-                                    color: const Color(0xFF8892B0),
-                                  ),
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.verified,
+                                      color: certification.color,
+                                      size: 32 * scale,
+                                    ),
+                                    SizedBox(width: 16 * scale),
+                                    Expanded(
+                                      child: Text(
+                                        certification.title,
+                                        style: TextStyle(
+                                          fontSize:
+                                              (isSmallScreen ? 24 : 32) * scale,
+                                          fontWeight: FontWeight.w800,
+                                          color: const Color(0xFFCCD6F6),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                SizedBox(height: 4 * widget.scale),
+                                SizedBox(height: 8 * scale),
                                 Text(
-                                  certification.credentialId,
+                                  'Issued by: ${certification.issuer}',
                                   style: TextStyle(
-                                    fontSize: 16 * widget.scale,
-                                    color: const Color(0xFFCCD6F6),
+                                    fontSize: (isSmallScreen ? 16 : 20) * scale,
+                                    color: certification.color,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
                               ],
                             ),
                           ),
+                          IconButton(
+                            onPressed: () => Navigator.pop(context),
+                            icon: Icon(
+                              Icons.close,
+                              color: const Color(0xFF8892B0),
+                              size: 28 * scale,
+                            ),
+                          ),
                         ],
                       ),
+                      SizedBox(height: 24 * scale),
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 20 * scale,
+                          vertical: 10 * scale,
+                        ),
+                        decoration: BoxDecoration(
+                          color: certification.color.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(
+                            20 * widget.scale,
+                          ),
+                          border: Border.all(
+                            color: certification.color.withValues(alpha: 0.4),
+                            width: 1,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.calendar_today,
+                              color: certification.color,
+                              size: 16 * scale,
+                            ),
+                            SizedBox(width: 8 * scale),
+                            Text(
+                              'Issued: ${certification.date}',
+                              style: TextStyle(
+                                fontSize: 16 * scale,
+                                color: certification.color,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 32 * scale),
+                      Text(
+                        certification.description,
+                        style: TextStyle(
+                          fontSize: 18 * scale,
+                          color: const Color(0xFFCCD6F6),
+                          height: 1.7,
+                        ),
+                      ),
+                      SizedBox(height: 32 * scale),
+                      Container(
+                        padding: EdgeInsets.all(20 * scale),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF1E3A5F).withValues(alpha: 0.5),
+                          borderRadius: BorderRadius.circular(
+                            16 * widget.scale,
+                          ),
+                          border: Border.all(
+                            color: certification.color.withValues(alpha: 0.2),
+                            width: 1,
+                          ),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Credential Information',
+                              style: TextStyle(
+                                fontSize: 20 * scale,
+                                fontWeight: FontWeight.w700,
+                                color: certification.color,
+                              ),
+                            ),
+                            SizedBox(height: 12 * scale),
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.fingerprint,
+                                  color: certification.color,
+                                  size: 20 * scale,
+                                ),
+                                SizedBox(width: 12 * scale),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Credential ID:',
+                                        style: TextStyle(
+                                          fontSize: 14 * scale,
+                                          color: const Color(0xFF8892B0),
+                                        ),
+                                      ),
+                                      SizedBox(height: 4 * scale),
+                                      Text(
+                                        certification.credentialId,
+                                        style: TextStyle(
+                                          fontSize: 16 * scale,
+                                          color: const Color(0xFFCCD6F6),
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 20 * scale),
                     ],
                   ),
                 ),
-                SizedBox(height: 20 * widget.scale),
-                // Center(
-                //   child: Container(
-                //     padding: EdgeInsets.symmetric(
-                //       horizontal: 32 * widget.scale,
-                //       vertical: 16 * widget.scale,
-                //     ),
-                //     decoration: BoxDecoration(
-                //       gradient: LinearGradient(
-                //         colors: [
-                //           certification.color,
-                //           certification.color.withValues(alpha: 0.7),
-                //         ],
-                //       ),
-                //       borderRadius: BorderRadius.circular(30 * widget.scale),
-                //     ),
-                //     child: Row(
-                //       mainAxisSize: MainAxisSize.min,
-                //       children: [
-                //         Icon(
-                //           Icons.visibility,
-                //           color: Colors.white,
-                //           size: 20 * widget.scale,
-                //         ),
-                //         SizedBox(width: 12 * widget.scale),
-                //         Text(
-                //           'View Certificate',
-                //           style: TextStyle(
-                //             fontSize: 18 * widget.scale,
-                //             color: Colors.white,
-                //             fontWeight: FontWeight.w600,
-                //           ),
-                //         ),
-                //       ],
-                //     ),
-                //   ),
-                // ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         );
       },
     );

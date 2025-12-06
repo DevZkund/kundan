@@ -243,56 +243,70 @@ class _SkillsPageState extends State<SkillsPage>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF0A192F),
-      body: AnimatedBuilder(
-        animation: _controller,
-        builder: (context, child) {
-          return FadeTransition(
-            opacity: _fadeAnimation,
-            child: Transform(
-              transform: Matrix4.identity()
-                ..scale(_scaleAnimation.value)
-                ..rotateZ(_rotationAnimation.value * 3.1415927 / 180),
-              child: SingleChildScrollView(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 48 * widget.scale,
-                  vertical: 40 * widget.scale,
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final isSmallScreen = constraints.maxWidth < 800;
+          final responsiveScale = isSmallScreen
+              ? widget.scale * 0.8
+              : widget.scale;
+
+          return AnimatedBuilder(
+            animation: _controller,
+            builder: (context, child) {
+              return FadeTransition(
+                opacity: _fadeAnimation,
+                child: Transform(
+                  transform: Matrix4.identity()
+                    ..scaleByDouble(
+                      _scaleAnimation.value,
+                      _scaleAnimation.value,
+                      _scaleAnimation.value,
+                      1.0,
+                    )
+                    ..rotateZ(_rotationAnimation.value * 3.1415927 / 180),
+                  child: SingleChildScrollView(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: (isSmallScreen ? 20 : 48) * widget.scale,
+                      vertical: 40 * widget.scale,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        // Header Section
+                        _buildHeaderSection(responsiveScale),
+
+                        SizedBox(height: 60 * widget.scale),
+
+                        // Skills Overview
+                        _buildSkillsOverview(responsiveScale, isSmallScreen),
+
+                        SizedBox(height: 60 * widget.scale),
+
+                        // Skills Categories Grid
+                        _buildSkillsGrid(responsiveScale, constraints.maxWidth),
+
+                        SizedBox(height: 60 * widget.scale),
+
+                        // Experience Timeline
+                        _buildExperienceSection(responsiveScale, isSmallScreen),
+
+                        SizedBox(height: 60 * widget.scale),
+
+                        // Skill Progression
+                        _buildProgressionSection(responsiveScale),
+                      ],
+                    ),
+                  ),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    // Header Section
-                    _buildHeaderSection(),
-
-                    SizedBox(height: 60 * widget.scale),
-
-                    // Skills Overview
-                    _buildSkillsOverview(),
-
-                    SizedBox(height: 60 * widget.scale),
-
-                    // Skills Categories Grid
-                    _buildSkillsGrid(),
-
-                    SizedBox(height: 60 * widget.scale),
-
-                    // Experience Timeline
-                    _buildExperienceSection(),
-
-                    SizedBox(height: 60 * widget.scale),
-
-                    // Skill Progression
-                    _buildProgressionSection(),
-                  ],
-                ),
-              ),
-            ),
+              );
+            },
           );
         },
       ),
     );
   }
 
-  Widget _buildHeaderSection() {
+  Widget _buildHeaderSection(double scale) {
     return AnimatedOpacity(
       opacity: _controller.value > 0.2 ? 1.0 : 0.0,
       duration: const Duration(milliseconds: 1000),
@@ -305,16 +319,17 @@ class _SkillsPageState extends State<SkillsPage>
             child: Text(
               'TECHNICAL SKILLS',
               style: TextStyle(
-                fontSize: 42 * widget.scale,
+                fontSize: 42 * scale, // Responsive font size
                 fontWeight: FontWeight.w800,
                 letterSpacing: 2,
                 color: const Color(0xFFCCD6F6),
               ),
+              textAlign: TextAlign.center,
             ),
           ),
           SizedBox(height: 16 * widget.scale),
           Container(
-            width: 250 * widget.scale,
+            width: 250 * scale,
             height: 3,
             decoration: BoxDecoration(
               gradient: const LinearGradient(
@@ -331,23 +346,24 @@ class _SkillsPageState extends State<SkillsPage>
           Text(
             '1.5+ Years of Technical Excellence',
             style: TextStyle(
-              fontSize: 20 * widget.scale,
+              fontSize: 20 * scale,
               color: const Color(0xFF8892B0),
               fontWeight: FontWeight.w300,
             ),
+            textAlign: TextAlign.center,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildSkillsOverview() {
+  Widget _buildSkillsOverview(double scale, bool isSmallScreen) {
     return AnimatedOpacity(
       opacity: _controller.value > 0.3 ? 1.0 : 0.0,
       duration: const Duration(milliseconds: 1200),
       child: Container(
         width: double.infinity,
-        padding: EdgeInsets.all(40 * widget.scale),
+        padding: EdgeInsets.all(isSmallScreen ? 24 * scale : 40 * scale),
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
@@ -370,70 +386,190 @@ class _SkillsPageState extends State<SkillsPage>
             ),
           ],
         ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            // Left - Main Skills
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+        child: isSmallScreen
+            ? Column(
                 children: [
-                  Text(
-                    'Core Expertise',
-                    style: TextStyle(
-                      fontSize: 28 * widget.scale,
-                      fontWeight: FontWeight.w700,
-                      color: const Color(0xFFCCD6F6),
+                  // Main Skills
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Core Expertise',
+                        style: TextStyle(
+                          fontSize: 24 * scale,
+                          fontWeight: FontWeight.w700,
+                          color: const Color(0xFFCCD6F6),
+                        ),
+                      ),
+                      SizedBox(height: 20 * scale),
+                      _buildSkillChip(
+                        scale,
+                        'Flutter SDK',
+                        95,
+                        const Color(0xFF64FFDA),
+                      ),
+                      SizedBox(height: 12 * scale),
+                      _buildSkillChip(
+                        scale,
+                        'Dart Programming',
+                        95,
+                        const Color(0xFF00D1FF),
+                      ),
+                      SizedBox(height: 12 * scale),
+                      _buildSkillChip(
+                        scale,
+                        'Cross-Platform',
+                        92,
+                        const Color(0xFF7B61FF),
+                      ),
+                      SizedBox(height: 12 * scale),
+                      _buildSkillChip(
+                        scale,
+                        'UI/UX Design',
+                        88,
+                        const Color(0xFFFFD166),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 30 * scale),
+                  // Stats
+                  Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.all(24 * scale),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF1E3A5F).withValues(alpha: 0.5),
+                      borderRadius: BorderRadius.circular(24 * widget.scale),
+                      border: Border.all(
+                        color: const Color(0xFF2D4A76),
+                        width: 1,
+                      ),
+                    ),
+                    child: Column(
+                      children: [
+                        _buildStatCircle(
+                          scale,
+                          '15+',
+                          'Skills',
+                          const Color(0xFF00D1FF),
+                        ),
+                        SizedBox(height: 24 * scale),
+                        _buildStatCircle(
+                          scale,
+                          '8',
+                          'Projects',
+                          const Color(0xFF64FFDA),
+                        ),
+                        SizedBox(height: 24 * scale),
+                        _buildStatCircle(
+                          scale,
+                          '1.5+',
+                          'Years',
+                          const Color(0xFF7B61FF),
+                        ),
+                      ],
                     ),
                   ),
-                  SizedBox(height: 24 * widget.scale),
-                  _buildSkillChip('Flutter SDK', 95, const Color(0xFF64FFDA)),
-                  SizedBox(height: 16 * widget.scale),
-                  _buildSkillChip(
-                    'Dart Programming',
-                    95,
-                    const Color(0xFF00D1FF),
-                  ),
-                  SizedBox(height: 16 * widget.scale),
-                  _buildSkillChip(
-                    'Cross-Platform',
-                    92,
-                    const Color(0xFF7B61FF),
-                  ),
-                  SizedBox(height: 16 * widget.scale),
-                  _buildSkillChip('UI/UX Design', 88, const Color(0xFFFFD166)),
                 ],
-              ),
-            ),
-
-            SizedBox(width: 40 * widget.scale),
-
-            // Right - Stats
-            Container(
-              width: 300 * widget.scale,
-              padding: EdgeInsets.all(32 * widget.scale),
-              decoration: BoxDecoration(
-                color: const Color(0xFF1E3A5F).withValues(alpha: 0.5),
-                borderRadius: BorderRadius.circular(24 * widget.scale),
-                border: Border.all(color: const Color(0xFF2D4A76), width: 1),
-              ),
-              child: Column(
+              )
+            : Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  _buildStatCircle('15+', 'Skills', const Color(0xFF00D1FF)),
-                  SizedBox(height: 24 * widget.scale),
-                  _buildStatCircle('8', 'Projects', const Color(0xFF64FFDA)),
-                  SizedBox(height: 24 * widget.scale),
-                  _buildStatCircle('1.5+', 'Years', const Color(0xFF7B61FF)),
+                  // Left - Main Skills
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Core Expertise',
+                          style: TextStyle(
+                            fontSize: 28 * scale,
+                            fontWeight: FontWeight.w700,
+                            color: const Color(0xFFCCD6F6),
+                          ),
+                        ),
+                        SizedBox(height: 24 * widget.scale),
+                        _buildSkillChip(
+                          scale,
+                          'Flutter SDK',
+                          95,
+                          const Color(0xFF64FFDA),
+                        ),
+                        SizedBox(height: 16 * widget.scale),
+                        _buildSkillChip(
+                          scale,
+                          'Dart Programming',
+                          95,
+                          const Color(0xFF00D1FF),
+                        ),
+                        SizedBox(height: 16 * widget.scale),
+                        _buildSkillChip(
+                          scale,
+                          'Cross-Platform',
+                          92,
+                          const Color(0xFF7B61FF),
+                        ),
+                        SizedBox(height: 16 * widget.scale),
+                        _buildSkillChip(
+                          scale,
+                          'UI/UX Design',
+                          88,
+                          const Color(0xFFFFD166),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  SizedBox(width: 40 * widget.scale),
+
+                  // Right - Stats
+                  Container(
+                    width: 300 * widget.scale,
+                    padding: EdgeInsets.all(32 * scale),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF1E3A5F).withValues(alpha: 0.5),
+                      borderRadius: BorderRadius.circular(24 * widget.scale),
+                      border: Border.all(
+                        color: const Color(0xFF2D4A76),
+                        width: 1,
+                      ),
+                    ),
+                    child: Column(
+                      children: [
+                        _buildStatCircle(
+                          scale,
+                          '15+',
+                          'Skills',
+                          const Color(0xFF00D1FF),
+                        ),
+                        SizedBox(height: 24 * widget.scale),
+                        _buildStatCircle(
+                          scale,
+                          '8',
+                          'Projects',
+                          const Color(0xFF64FFDA),
+                        ),
+                        SizedBox(height: 24 * widget.scale),
+                        _buildStatCircle(
+                          scale,
+                          '1.5+',
+                          'Years',
+                          const Color(0xFF7B61FF),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
-            ),
-          ],
-        ),
       ),
     );
   }
 
-  Widget _buildSkillChip(String skill, int percentage, Color color) {
+  Widget _buildSkillChip(
+    double scale,
+    String skill,
+    int percentage,
+    Color color,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -443,7 +579,7 @@ class _SkillsPageState extends State<SkillsPage>
             Text(
               skill,
               style: TextStyle(
-                fontSize: 18 * widget.scale,
+                fontSize: 18 * scale,
                 color: const Color(0xFFCCD6F6),
                 fontWeight: FontWeight.w500,
               ),
@@ -451,19 +587,19 @@ class _SkillsPageState extends State<SkillsPage>
             Text(
               '$percentage%',
               style: TextStyle(
-                fontSize: 16 * widget.scale,
+                fontSize: 16 * scale,
                 color: color,
                 fontWeight: FontWeight.w600,
               ),
             ),
           ],
         ),
-        SizedBox(height: 8 * widget.scale),
+        SizedBox(height: 8 * scale),
         Container(
-          height: 10 * widget.scale,
+          height: 10 * scale,
           decoration: BoxDecoration(
             color: const Color(0xFF1E3A5F),
-            borderRadius: BorderRadius.circular(5 * widget.scale),
+            borderRadius: BorderRadius.circular(5 * scale),
           ),
           child: AnimatedFractionallySizedBox(
             duration: const Duration(milliseconds: 2000),
@@ -475,7 +611,7 @@ class _SkillsPageState extends State<SkillsPage>
                 gradient: LinearGradient(
                   colors: [color, color.withValues(alpha: 0.7)],
                 ),
-                borderRadius: BorderRadius.circular(5 * widget.scale),
+                borderRadius: BorderRadius.circular(5 * scale),
                 boxShadow: [
                   BoxShadow(
                     color: color.withValues(alpha: 0.5),
@@ -491,12 +627,17 @@ class _SkillsPageState extends State<SkillsPage>
     );
   }
 
-  Widget _buildStatCircle(String value, String label, Color color) {
+  Widget _buildStatCircle(
+    double scale,
+    String value,
+    String label,
+    Color color,
+  ) {
     return Column(
       children: [
         Container(
-          width: 120 * widget.scale,
-          height: 120 * widget.scale,
+          width: 120 * scale,
+          height: 120 * scale,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             gradient: LinearGradient(
@@ -516,18 +657,18 @@ class _SkillsPageState extends State<SkillsPage>
             child: Text(
               value,
               style: TextStyle(
-                fontSize: 32 * widget.scale,
+                fontSize: 32 * scale,
                 color: Colors.white,
                 fontWeight: FontWeight.w800,
               ),
             ),
           ),
         ),
-        SizedBox(height: 12 * widget.scale),
+        SizedBox(height: 12 * scale),
         Text(
           label,
           style: TextStyle(
-            fontSize: 16 * widget.scale,
+            fontSize: 16 * scale,
             color: const Color(0xFF8892B0),
             fontWeight: FontWeight.w500,
           ),
@@ -536,7 +677,9 @@ class _SkillsPageState extends State<SkillsPage>
     );
   }
 
-  Widget _buildSkillsGrid() {
+  Widget _buildSkillsGrid(double scale, double maxWidth) {
+    int crossAxisCount = maxWidth > 1000 ? 3 : (maxWidth > 600 ? 2 : 1);
+
     return AnimatedOpacity(
       opacity: _controller.value > 0.5 ? 1.0 : 0.0,
       duration: const Duration(milliseconds: 1400),
@@ -545,7 +688,7 @@ class _SkillsPageState extends State<SkillsPage>
           Text(
             'SKILLS CATEGORIES',
             style: TextStyle(
-              fontSize: 32 * widget.scale,
+              fontSize: 32 * scale,
               fontWeight: FontWeight.w800,
               color: const Color(0xFFCCD6F6),
               letterSpacing: 1.5,
@@ -557,14 +700,20 @@ class _SkillsPageState extends State<SkillsPage>
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: MediaQuery.of(context).size.width > 1000 ? 3 : 2,
+              crossAxisCount: crossAxisCount,
               crossAxisSpacing: 32 * widget.scale,
               mainAxisSpacing: 32 * widget.scale,
-              childAspectRatio: 1.2,
+              childAspectRatio: crossAxisCount == 1
+                  ? 2.5
+                  : 1.2, // Adjust ratio for single column
             ),
             itemCount: _skillCategories.length,
             itemBuilder: (context, index) {
-              return _buildSkillCategoryCard(_skillCategories[index], index);
+              return _buildSkillCategoryCard(
+                _skillCategories[index],
+                index,
+                scale,
+              );
             },
           ),
         ],
@@ -572,7 +721,11 @@ class _SkillsPageState extends State<SkillsPage>
     );
   }
 
-  Widget _buildSkillCategoryCard(SkillCategory category, int index) {
+  Widget _buildSkillCategoryCard(
+    SkillCategory category,
+    int index,
+    double scale,
+  ) {
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
@@ -606,55 +759,55 @@ class _SkillsPageState extends State<SkillsPage>
           child: Stack(
             children: [
               Positioned(
-                top: 20 * widget.scale,
-                right: 20 * widget.scale,
+                top: 20 * scale,
+                right: 20 * scale,
                 child: Icon(
                   category.icon,
-                  size: 40 * widget.scale,
+                  size: 40 * scale,
                   color: category.color.withValues(alpha: 0.3),
                 ),
               ),
               Padding(
-                padding: EdgeInsets.all(32 * widget.scale),
+                padding: EdgeInsets.all(32 * scale),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Icon(
                       category.icon,
-                      size: 32 * widget.scale,
+                      size: 32 * scale,
                       color: category.color,
                     ),
-                    SizedBox(height: 20 * widget.scale),
+                    SizedBox(height: 20 * scale),
                     Text(
                       category.title,
                       style: TextStyle(
-                        fontSize: 20 * widget.scale,
+                        fontSize: 20 * scale,
                         fontWeight: FontWeight.w700,
                         color: const Color(0xFFCCD6F6),
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    SizedBox(height: 16 * widget.scale),
+                    SizedBox(height: 16 * scale),
                     ...category.skills.take(2).map((skill) {
                       return Padding(
-                        padding: EdgeInsets.only(bottom: 8 * widget.scale),
+                        padding: EdgeInsets.only(bottom: 8 * scale),
                         child: Row(
                           children: [
                             Container(
-                              width: 6 * widget.scale,
-                              height: 6 * widget.scale,
+                              width: 6 * scale,
+                              height: 6 * scale,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 color: category.color,
                               ),
                             ),
-                            SizedBox(width: 12 * widget.scale),
+                            SizedBox(width: 12 * scale),
                             Expanded(
                               child: Text(
                                 skill.name,
                                 style: TextStyle(
-                                  fontSize: 14 * widget.scale,
+                                  fontSize: 14 * scale,
                                   color: const Color(0xFF8892B0),
                                 ),
                               ),
@@ -665,11 +818,11 @@ class _SkillsPageState extends State<SkillsPage>
                     }),
                     if (category.skills.length > 2)
                       Padding(
-                        padding: EdgeInsets.only(top: 8 * widget.scale),
+                        padding: EdgeInsets.only(top: 8 * scale),
                         child: Text(
                           '+${category.skills.length - 2} more',
                           style: TextStyle(
-                            fontSize: 13 * widget.scale,
+                            fontSize: 13 * scale,
                             color: category.color,
                             fontWeight: FontWeight.w500,
                           ),
@@ -682,15 +835,15 @@ class _SkillsPageState extends State<SkillsPage>
                         Text(
                           'View Details',
                           style: TextStyle(
-                            fontSize: 13 * widget.scale,
+                            fontSize: 13 * scale,
                             color: category.color,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        SizedBox(width: 8 * widget.scale),
+                        SizedBox(width: 8 * scale),
                         Icon(
                           Icons.arrow_forward,
-                          size: 14 * widget.scale,
+                          size: 14 * scale,
                           color: category.color,
                         ),
                       ],
@@ -705,13 +858,13 @@ class _SkillsPageState extends State<SkillsPage>
     );
   }
 
-  Widget _buildExperienceSection() {
+  Widget _buildExperienceSection(double scale, bool isSmallScreen) {
     return AnimatedOpacity(
       opacity: _controller.value > 0.7 ? 1.0 : 0.0,
       duration: const Duration(milliseconds: 1600),
       child: Container(
         width: double.infinity,
-        padding: EdgeInsets.all(40 * widget.scale),
+        padding: EdgeInsets.all(isSmallScreen ? 20 * scale : 40 * widget.scale),
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
@@ -729,40 +882,80 @@ class _SkillsPageState extends State<SkillsPage>
         ),
         child: Column(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'SKILL EXPERIENCE',
-                  style: TextStyle(
-                    fontSize: 28 * widget.scale,
-                    fontWeight: FontWeight.w800,
-                    color: const Color(0xFFCCD6F6),
-                    letterSpacing: 1.5,
+            isSmallScreen
+                ? Column(
+                    children: [
+                      Text(
+                        'SKILL EXPERIENCE',
+                        style: TextStyle(
+                          fontSize: 24 * scale,
+                          fontWeight: FontWeight.w800,
+                          color: const Color(0xFFCCD6F6),
+                          letterSpacing: 1.5,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: 16 * scale),
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 20 * widget.scale,
+                          vertical: 10 * widget.scale,
+                        ),
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFF00D1FF), Color(0xFF64FFDA)],
+                          ),
+                          borderRadius: BorderRadius.circular(
+                            20 * widget.scale,
+                          ),
+                        ),
+                        child: Text(
+                          '1.5+ Years',
+                          style: TextStyle(
+                            fontSize: 14 * scale,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'SKILL EXPERIENCE',
+                        style: TextStyle(
+                          fontSize: 28 * widget.scale,
+                          fontWeight: FontWeight.w800,
+                          color: const Color(0xFFCCD6F6),
+                          letterSpacing: 1.5,
+                        ),
+                      ),
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 20 * widget.scale,
+                          vertical: 10 * widget.scale,
+                        ),
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFF00D1FF), Color(0xFF64FFDA)],
+                          ),
+                          borderRadius: BorderRadius.circular(
+                            20 * widget.scale,
+                          ),
+                        ),
+                        child: Text(
+                          '1.5+ Years',
+                          style: TextStyle(
+                            fontSize: 16 * widget.scale,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 20 * widget.scale,
-                    vertical: 10 * widget.scale,
-                  ),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF00D1FF), Color(0xFF64FFDA)],
-                    ),
-                    borderRadius: BorderRadius.circular(20 * widget.scale),
-                  ),
-                  child: Text(
-                    '1.5+ Years',
-                    style: TextStyle(
-                      fontSize: 16 * widget.scale,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ],
-            ),
             SizedBox(height: 40 * widget.scale),
 
             Wrap(
@@ -770,7 +963,7 @@ class _SkillsPageState extends State<SkillsPage>
               runSpacing: 24 * widget.scale,
               alignment: WrapAlignment.center,
               children: _skillExperiences.map((experience) {
-                return _buildExperienceCard(experience);
+                return _buildExperienceCard(experience, scale);
               }).toList(),
             ),
           ],
@@ -779,10 +972,10 @@ class _SkillsPageState extends State<SkillsPage>
     );
   }
 
-  Widget _buildExperienceCard(SkillExperience experience) {
+  Widget _buildExperienceCard(SkillExperience experience, double scale) {
     return Container(
-      width: 300 * widget.scale,
-      padding: EdgeInsets.all(24 * widget.scale),
+      width: 300 * scale,
+      padding: EdgeInsets.all(24 * scale),
       decoration: BoxDecoration(
         color: const Color(0xFF1E3A5F).withValues(alpha: 0.6),
         borderRadius: BorderRadius.circular(20 * widget.scale),
@@ -798,7 +991,7 @@ class _SkillsPageState extends State<SkillsPage>
                 child: Text(
                   experience.skill,
                   style: TextStyle(
-                    fontSize: 20 * widget.scale,
+                    fontSize: 20 * scale,
                     fontWeight: FontWeight.w700,
                     color: const Color(0xFFCCD6F6),
                   ),
@@ -816,7 +1009,7 @@ class _SkillsPageState extends State<SkillsPage>
                 child: Text(
                   experience.proficiency,
                   style: TextStyle(
-                    fontSize: 12 * widget.scale,
+                    fontSize: 12 * scale,
                     color: Colors.white,
                     fontWeight: FontWeight.w600,
                   ),
@@ -824,15 +1017,15 @@ class _SkillsPageState extends State<SkillsPage>
               ),
             ],
           ),
-          SizedBox(height: 16 * widget.scale),
+          SizedBox(height: 16 * scale),
           Row(
             children: [
-              _buildExperienceStat('${experience.years}y', 'Experience'),
+              _buildExperienceStat('${experience.years}y', 'Experience', scale),
               SizedBox(width: 20 * widget.scale),
-              _buildExperienceStat('${experience.projects}', 'Projects'),
+              _buildExperienceStat('${experience.projects}', 'Projects', scale),
             ],
           ),
-          SizedBox(height: 16 * widget.scale),
+          SizedBox(height: 16 * scale),
           LinearProgressIndicator(
             value: experience.years / 2, // Normalize to 0-1 range
             backgroundColor: const Color(0xFF1E3A5F),
@@ -845,14 +1038,14 @@ class _SkillsPageState extends State<SkillsPage>
     );
   }
 
-  Widget _buildExperienceStat(String value, String label) {
+  Widget _buildExperienceStat(String value, String label, double scale) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           value,
           style: TextStyle(
-            fontSize: 18 * widget.scale,
+            fontSize: 18 * scale,
             fontWeight: FontWeight.w800,
             color: const Color(0xFF64FFDA),
           ),
@@ -860,7 +1053,7 @@ class _SkillsPageState extends State<SkillsPage>
         Text(
           label,
           style: TextStyle(
-            fontSize: 13 * widget.scale,
+            fontSize: 13 * scale,
             color: const Color(0xFF8892B0),
           ),
         ),
@@ -868,7 +1061,7 @@ class _SkillsPageState extends State<SkillsPage>
     );
   }
 
-  Widget _buildProgressionSection() {
+  Widget _buildProgressionSection(double scale) {
     return AnimatedOpacity(
       opacity: _controller.value > 0.9 ? 1.0 : 0.0,
       duration: const Duration(milliseconds: 1800),
@@ -877,7 +1070,7 @@ class _SkillsPageState extends State<SkillsPage>
           Text(
             'SKILL PROGRESSION',
             style: TextStyle(
-              fontSize: 28 * widget.scale,
+              fontSize: 28 * scale,
               fontWeight: FontWeight.w800,
               color: const Color(0xFFCCD6F6),
               letterSpacing: 1.5,
@@ -893,7 +1086,7 @@ class _SkillsPageState extends State<SkillsPage>
             ),
             child: Column(
               children: [
-                _buildProgressionTimeline(),
+                _buildProgressionTimeline(scale),
                 SizedBox(height: 40 * widget.scale),
                 Container(
                   padding: EdgeInsets.symmetric(
@@ -912,16 +1105,17 @@ class _SkillsPageState extends State<SkillsPage>
                       Icon(
                         Icons.trending_up,
                         color: Colors.white,
-                        size: 24 * widget.scale,
+                        size: 24 * scale,
                       ),
                       SizedBox(width: 12 * widget.scale),
                       Text(
                         'Continuously Learning & Growing',
                         style: TextStyle(
-                          fontSize: 20 * widget.scale,
+                          fontSize: 20 * scale,
                           color: Colors.white,
                           fontWeight: FontWeight.w600,
                         ),
+                        textAlign: TextAlign.center,
                       ),
                     ],
                   ),
@@ -934,36 +1128,44 @@ class _SkillsPageState extends State<SkillsPage>
     );
   }
 
-  Widget _buildProgressionTimeline() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+  Widget _buildProgressionTimeline(double scale) {
+    // Use LayoutBuilder locally or just check width context if passed
+    // But here we can use Wrap or Column for responsiveness
+    // Since it's a timeline, a vertical list on mobile might be better.
+    // However, Wrap is easier to implement quickly.
+
+    return Wrap(
+      spacing: 40 * widget.scale,
+      runSpacing: 40 * widget.scale,
+      alignment: WrapAlignment.center,
       children: [
         _buildTimelineStep(
           'Dart Basics',
           '2022',
           Icons.play_arrow,
           const Color(0xFF00D1FF),
+          scale,
         ),
-        SizedBox(width: 40 * widget.scale),
         _buildTimelineStep(
           'Flutter Core',
           '2023',
           Icons.code,
           const Color(0xFF64FFDA),
+          scale,
         ),
-        SizedBox(width: 40 * widget.scale),
         _buildTimelineStep(
           'Advanced Patterns',
           '2024',
           Icons.architecture,
           const Color(0xFF7B61FF),
+          scale,
         ),
-        SizedBox(width: 40 * widget.scale),
         _buildTimelineStep(
           'Production Apps',
           'Present',
           Icons.rocket_launch,
           const Color(0xFFFFD166),
+          scale,
         ),
       ],
     );
@@ -974,12 +1176,13 @@ class _SkillsPageState extends State<SkillsPage>
     String year,
     IconData icon,
     Color color,
+    double scale,
   ) {
     return Column(
       children: [
         Container(
-          width: 80 * widget.scale,
-          height: 80 * widget.scale,
+          width: 80 * scale,
+          height: 80 * scale,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             gradient: LinearGradient(
@@ -995,23 +1198,23 @@ class _SkillsPageState extends State<SkillsPage>
               ),
             ],
           ),
-          child: Icon(icon, color: Colors.white, size: 32 * widget.scale),
+          child: Icon(icon, color: Colors.white, size: 32 * scale),
         ),
-        SizedBox(height: 16 * widget.scale),
+        SizedBox(height: 16 * scale),
         Text(
           title,
           style: TextStyle(
-            fontSize: 14 * widget.scale,
+            fontSize: 14 * scale,
             color: const Color(0xFFCCD6F6),
             fontWeight: FontWeight.w600,
           ),
           textAlign: TextAlign.center,
         ),
-        SizedBox(height: 8 * widget.scale),
+        SizedBox(height: 8 * scale),
         Text(
           year,
           style: TextStyle(
-            fontSize: 12 * widget.scale,
+            fontSize: 12 * scale,
             color: color,
             fontWeight: FontWeight.w500,
           ),
