@@ -1,11 +1,11 @@
 {
-    "name": "portfolio",
-    "short_name": "portfolio",
+    "name": "Kundan Kumar Portfolio",
+    "short_name": "Kundan",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#0A192F",
+    "theme_color": "#0A192F",
+    "description": "Portfolio of Kundan Kumar - Flutter Developer",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
