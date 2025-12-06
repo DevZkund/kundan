@@ -143,11 +143,12 @@ class _AboutPageState extends State<AboutPage>
   }
 
   Widget _buildAnimatedProfileSection() {
+    final isMobile = MediaQuery.of(context).size.width < 600;
     return Column(
       children: [
         // Animated profile circle with gradient
         Container(
-          width: 220 * widget.scale,
+          width: isMobile ? 180 * widget.scale : 220 * widget.scale,
           height: 220 * widget.scale,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
@@ -203,7 +204,7 @@ class _AboutPageState extends State<AboutPage>
                 child: Text(
                   'KUNDAN KUMAR',
                   style: TextStyle(
-                    fontSize: 42 * widget.scale,
+                    fontSize: isMobile ? 32 * widget.scale : 42 * widget.scale,
                     fontWeight: FontWeight.w800,
                     letterSpacing: 1.5,
                     color: const Color(0xFF64FFDA),

@@ -703,9 +703,7 @@ class _SkillsPageState extends State<SkillsPage>
               crossAxisCount: crossAxisCount,
               crossAxisSpacing: 32 * widget.scale,
               mainAxisSpacing: 32 * widget.scale,
-              childAspectRatio: crossAxisCount == 1
-                  ? 2.5
-                  : 1.2, // Adjust ratio for single column
+              childAspectRatio: crossAxisCount == 1 ? 1.4 : 1.2,
             ),
             itemCount: _skillCategories.length,
             itemBuilder: (context, index) {
@@ -1084,44 +1082,7 @@ class _SkillsPageState extends State<SkillsPage>
               borderRadius: BorderRadius.circular(28 * widget.scale),
               border: Border.all(color: const Color(0xFF1E3A5F), width: 1),
             ),
-            child: Column(
-              children: [
-                _buildProgressionTimeline(scale),
-                SizedBox(height: 40 * widget.scale),
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 32 * widget.scale,
-                    vertical: 20 * widget.scale,
-                  ),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF00D1FF), Color(0xFF7B61FF)],
-                    ),
-                    borderRadius: BorderRadius.circular(30 * widget.scale),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.trending_up,
-                        color: Colors.white,
-                        size: 24 * scale,
-                      ),
-                      SizedBox(width: 12 * widget.scale),
-                      Text(
-                        'Continuously Learning & Growing',
-                        style: TextStyle(
-                          fontSize: 20 * scale,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+            child: _buildProgressionTimeline(scale),
           ),
         ],
       ),
@@ -1237,6 +1198,7 @@ class _SkillsPageState extends State<SkillsPage>
   }
 
   void _showSkillDetails(BuildContext context, SkillCategory category) {
+    final isMobile = MediaQuery.of(context).size.width < 600;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -1272,23 +1234,31 @@ class _SkillsPageState extends State<SkillsPage>
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
-                        Icon(
-                          category.icon,
-                          color: category.color,
-                          size: 32 * widget.scale,
-                        ),
-                        SizedBox(width: 16 * widget.scale),
-                        Text(
-                          category.title,
-                          style: TextStyle(
-                            fontSize: 32 * widget.scale,
-                            fontWeight: FontWeight.w800,
-                            color: const Color(0xFFCCD6F6),
+                    Expanded(
+                      child: Row(
+                        children: [
+                          Icon(
+                            category.icon,
+                            color: category.color,
+                            size: 32 * widget.scale,
                           ),
-                        ),
-                      ],
+                          SizedBox(width: 16 * widget.scale),
+                          Flexible(
+                            child: Text(
+                              category.title,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: isMobile
+                                    ? 24 * widget.scale
+                                    : 32 * widget.scale,
+                                fontWeight: FontWeight.w800,
+                                color: const Color(0xFFCCD6F6),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                     IconButton(
                       onPressed: () => Navigator.pop(context),

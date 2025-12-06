@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:portfolio/screens/about_page.dart';
 import 'package:portfolio/screens/contact_page.dart';
 import 'package:portfolio/screens/education_page.dart';
@@ -193,87 +196,21 @@ class _ResponsiveIphoneState extends State<ResponsiveIphone> {
     return Stack(
       children: [
         _buildWallpaper(),
-
         // Status Bar (Simplified)
         Positioned(
           top: 15 * scale,
           left: 20 * scale,
           right: 20 * scale,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "9:41",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16 * scale,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Row(
-                children: [
-                  Icon(
-                    Icons.signal_cellular_alt,
-                    color: Colors.white,
-                    size: 16 * scale,
-                  ),
-                  SizedBox(width: 5 * scale),
-                  Icon(Icons.wifi, color: Colors.white, size: 16 * scale),
-                  SizedBox(width: 5 * scale),
-                  Icon(
-                    Icons.battery_full,
-                    color: Colors.white,
-                    size: 16 * scale,
-                  ),
-                ],
-              ),
-            ],
-          ),
+          child: ShowTimeInStatusBar(scale: scale, width: width),
         ),
 
-        // Center text (your name in cursive)
+        // Big Digital Clock
         Positioned(
-          top: height * 0.15,
+          top: height * 0.12,
           left: 0,
           right: 0,
-          child: Column(
-            children: [
-              ShaderMask(
-                shaderCallback: (bounds) => LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Color(0xFFFFD700),
-                    Color(0xFFFFA500),
-                    Color(0xFFFF8C00),
-                  ],
-                ).createShader(bounds),
-                child: Text(
-                  "Kundan",
-                  style: TextStyle(
-                    fontFamily: "Pacifico",
-                    fontSize: 42 * scale,
-                    color: Colors.white, // required but ignored by shader
-                    fontWeight: FontWeight.w400,
-                    letterSpacing: 1.2,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              Text(
-                "Kumar",
-                style: TextStyle(
-                  fontFamily: "Pacifico",
-                  fontSize: 42 * scale,
-                  color: Colors.white.withValues(alpha: 0.9),
-                  fontWeight: FontWeight.w400,
-                  letterSpacing: 1.2,
-                ),
-              ),
-            ],
-          ),
+          child: Center(child: _BigDigitalClock(scale: scale)),
         ),
-
         // App Grid
         Positioned(
           top: height * 0.4,
@@ -324,7 +261,7 @@ class _ResponsiveIphoneState extends State<ResponsiveIphone> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: apps
             .take(4)
-            .map((app) => _DockIcon(app: app, scale: scale))
+            .map((app) => _AppGridIcon(app: app, scale: scale))
             .toList(),
       ),
     );
@@ -333,7 +270,7 @@ class _ResponsiveIphoneState extends State<ResponsiveIphone> {
   // ---------------------------
   Widget _buildAppGrid(double scale) {
     // Show remaining apps in grid if any
-    final gridApps = apps.skip(4).toList();
+    final gridApps = apps.skip(0).toList();
     if (gridApps.isEmpty) return SizedBox.shrink();
 
     return GridView.builder(
@@ -425,6 +362,70 @@ class _ResponsiveIphoneState extends State<ResponsiveIphone> {
   }
 }
 
+class ShowTimeInStatusBar extends StatefulWidget {
+  final double scale;
+  final double width;
+  const ShowTimeInStatusBar({
+    super.key,
+    required this.scale,
+    required this.width,
+  });
+
+  @override
+  State<ShowTimeInStatusBar> createState() => _ShowTimeInStatusBarState();
+}
+
+class _ShowTimeInStatusBarState extends State<ShowTimeInStatusBar> {
+  late Timer _timer;
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          DateFormat.Hms().format(DateTime.now()),
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 16 * widget.scale,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        Row(
+          children: [
+            Icon(
+              Icons.signal_cellular_alt,
+              color: Colors.white,
+              size: 16 * widget.scale,
+            ),
+            SizedBox(width: 5 * widget.scale),
+            Icon(Icons.wifi, color: Colors.white, size: 16 * widget.scale),
+            SizedBox(width: 5 * widget.scale),
+            Icon(
+              Icons.battery_full,
+              color: Colors.white,
+              size: 16 * widget.scale,
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
 // --------------------------------------------------
 // REUSABLE APP MODEL
 // --------------------------------------------------
@@ -434,51 +435,6 @@ class _AppModel {
   final Color color;
 
   const _AppModel(this.icon, this.name, this.color);
-}
-
-// --------------------------------------------------
-// REUSABLE DOCK ICON
-// --------------------------------------------------
-class _DockIcon extends StatelessWidget {
-  final _AppModel app;
-  final double scale;
-
-  const _DockIcon({required this.app, required this.scale});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => context
-          .findAncestorStateOfType<_ResponsiveIphoneState>()!
-          .openApp(app.name),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 50 * scale,
-            height: 50 * scale,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [app.color, app.color.withValues(alpha: 0.8)],
-              ),
-              borderRadius: BorderRadius.circular(14 * scale),
-              boxShadow: [
-                BoxShadow(
-                  color: app.color.withValues(alpha: 0.3),
-                  blurRadius: 8 * scale,
-                  offset: Offset(0, 4 * scale),
-                ),
-              ],
-            ),
-            child: Icon(app.icon, color: Colors.white, size: 28 * scale),
-          ),
-          // No text in dock for iPhone usually, or very small
-        ],
-      ),
-    );
-  }
 }
 
 // --------------------------------------------------
@@ -492,6 +448,7 @@ class _AppGridIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isMobile = MediaQuery.of(context).size.width < 600;
     return GestureDetector(
       onTap: () => context
           .findAncestorStateOfType<_ResponsiveIphoneState>()!
@@ -500,8 +457,8 @@ class _AppGridIcon extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 54 * scale,
-            height: 54 * scale,
+            width: isMobile ? 54 * (scale * 0.8) : 54 * scale,
+            height: isMobile ? 54 * (scale * 0.8) : 54 * scale,
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
@@ -538,6 +495,78 @@ class _AppGridIcon extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _BigDigitalClock extends StatefulWidget {
+  final double scale;
+  const _BigDigitalClock({required this.scale});
+
+  @override
+  State<_BigDigitalClock> createState() => _BigDigitalClockState();
+}
+
+class _BigDigitalClockState extends State<_BigDigitalClock> {
+  late Timer _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final now = DateTime.now();
+    final formattedTime = DateFormat('HH:mm').format(now);
+    final dateString = DateFormat('EEEE, MMMM d').format(now);
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          formattedTime,
+          style: TextStyle(
+            fontSize: 72 * widget.scale,
+            fontWeight: FontWeight.w200,
+            color: Colors.white,
+            letterSpacing: -2,
+            height: 1.0,
+            shadows: [
+              Shadow(
+                color: Colors.black.withValues(alpha: 0.3),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(height: 8 * widget.scale),
+        Text(
+          dateString,
+          style: TextStyle(
+            fontSize: 18 * widget.scale,
+            fontWeight: FontWeight.w500,
+            color: Colors.white.withValues(alpha: 0.9),
+            shadows: [
+              Shadow(
+                color: Colors.black.withValues(alpha: 0.3),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
