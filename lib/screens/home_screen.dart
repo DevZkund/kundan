@@ -3,7 +3,9 @@ import 'package:portfolio/widgets/ipad_device.dart';
 import 'package:portfolio/widgets/iphone_device.dart';
 
 class MyHomePage extends StatelessWidget {
-  const MyHomePage({super.key});
+  final double scale;
+  const MyHomePage({super.key, required this.scale});
+
 
   @override
   Widget build(BuildContext context) {
@@ -18,12 +20,12 @@ class MyHomePage extends StatelessWidget {
         return Center(
           child: isTablet
               ? ResponsiveIpad(
-                  maxWidth: screenWidth * 0.72,
-                  maxHeight: screenHeight * 0.72,
+                  maxWidth: screenWidth * 0.72 * scale,
+                  maxHeight: screenHeight * 0.72 * scale,
                 )
               : ResponsiveIphone(
-                  maxWidth: screenWidth * 0.84,
-                  maxHeight: screenHeight * 0.82,
+                  maxWidth: screenWidth * 0.84 * scale,
+                  maxHeight: screenHeight * 0.82 * scale,
                 ),
         );
       },

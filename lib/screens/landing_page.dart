@@ -166,7 +166,7 @@ class _LandingPageState extends State<LandingPage>
             child: Column(
               children: [
                 _buildHeroSection(),
-                Container(key: _projectsKey, child: const MyHomePage()),
+                Container(key: _projectsKey, child: const MyHomePage(scale: 1)),
 
                 _buildFooter(),
               ],
@@ -198,31 +198,25 @@ class _LandingPageState extends State<LandingPage>
   }
 
   Widget _buildHeroSection() {
-    final screenHeight = MediaQuery.of(context).size.height;
     final isMobile = MediaQuery.of(context).size.width < 900;
 
-    return SizedBox(
-      height: isMobile
-          ? screenHeight * 1.65 * widget.scale
-          : screenHeight * 0.88 * widget.scale,
-      child: AnimatedBuilder(
-        animation: _controller,
-        builder: (context, child) {
-          return Transform.translate(
-            offset: Offset(0, _slideAnimation.value),
-            child: Transform.scale(
-              scale: _scaleAnimation.value,
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: isMobile ? 20 : 60 * widget.scale,
-                  vertical: isMobile ? 40 : 60 * widget.scale,
-                ),
-                child: isMobile ? _buildMobileLayout() : _buildDesktopLayout(),
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return Transform.translate(
+          offset: Offset(0, _slideAnimation.value),
+          child: Transform.scale(
+            scale: _scaleAnimation.value,
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: isMobile ? 20 : 60 * widget.scale,
+                vertical: isMobile ? 40 : 60 * widget.scale,
               ),
+              child: isMobile ? _buildMobileLayout() : _buildDesktopLayout(),
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 
@@ -332,7 +326,7 @@ class _LandingPageState extends State<LandingPage>
   }
 
   Widget _buildTypingText() {
-    final isMobile = MediaQuery.of(context).size.width < 900;
+    final isMobile = MediaQuery.of(context).size.width < 600;
     return Container(
       decoration: BoxDecoration(
         color: _cardColor.withValues(alpha: 0.5),
