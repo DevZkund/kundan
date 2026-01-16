@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:portfolio/screens/home_screen.dart';
+import 'package:portfolio/screens/resume_screen.dart';
 
 class LandingPage extends StatefulWidget {
   final double scale;
@@ -33,6 +34,8 @@ class _LandingPageState extends State<LandingPage>
   String _displayText = '';
   bool _isDeleting = false;
   Timer? _typingTimer;
+  bool _isFrozen = false;
+  bool _showHint = true;
 
   // Constants for maintainability
   static const _primaryColor = Color(0xFF0F1B2D); // Deep Navy
@@ -162,13 +165,88 @@ class _LandingPageState extends State<LandingPage>
           _buildEnhancedBackground(),
           SingleChildScrollView(
             controller: _scrollController,
-            physics: const ClampingScrollPhysics(),
+            physics: _isFrozen
+                ? const NeverScrollableScrollPhysics()
+                : const ClampingScrollPhysics(),
             child: Column(
               children: [
                 _buildHeroSection(),
                 Container(key: _projectsKey, child: const MyHomePage(scale: 1)),
 
                 _buildFooter(),
+              ],
+            ),
+          ),
+          Positioned(
+            right: 20,
+            bottom: 20,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                // Hint Text
+                AnimatedOpacity(
+                  opacity: _showHint ? 1 : 0,
+                  duration: const Duration(milliseconds: 300),
+                  child: AnimatedSlide(
+                    offset: _showHint ? Offset.zero : const Offset(0, 0.2),
+                    duration: const Duration(milliseconds: 300),
+                    child: Container(
+                      margin: const EdgeInsets.only(bottom: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.75),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Text(
+                        "Tap to freeze",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+                // Attention Animation
+                TweenAnimationBuilder<double>(
+                  tween: Tween(begin: 0, end: _showHint ? 1 : 0),
+                  duration: const Duration(milliseconds: 900),
+                  curve: Curves.easeInOut,
+                  builder: (context, value, child) {
+                    return Transform.translate(
+                      offset: Offset(0, -6 * value),
+                      child: Transform.scale(
+                        scale: 1 + (0.08 * value),
+                        child: FloatingActionButton(
+                          backgroundColor: _accentColor,
+                          elevation: 6 + (4 * value),
+                          onPressed: () {
+                            setState(() {
+                              _isFrozen = !_isFrozen;
+                              _showHint = false; // STOP hint after interaction
+                            });
+                          },
+                          child: AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 250),
+                            child: Icon(
+                              _isFrozen
+                                  ? Icons.lock_outline_rounded
+                                  : Icons.lock_open_rounded,
+                              key: ValueKey(_isFrozen),
+                              color: _primaryColor,
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
               ],
             ),
           ),
@@ -980,8 +1058,10 @@ class _LandingPageState extends State<LandingPage>
   }
 
   void _downloadCV() {
-    // Implement CV download logic
-    print('Download CV functionality');
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const ResumeScreen()),
+    );
   }
 }
 
